@@ -8,7 +8,7 @@ namespace reco.ui.form.test {
     import PageDef = reco.ui.form.PageDef;
     import FormDef = reco.ui.form.FormDef;
     import FormDefItemAction = reco.ui.form.FormDefItemAction;
-    import Form = reco.ui.form.Form
+    import Form = reco.ui.form.Form;
     // ============================================================================================
     export class PersListFormDef extends FormDef {
         // ----------------------------------------------------------------------------------------
@@ -16,7 +16,7 @@ namespace reco.ui.form.test {
         btShowItemDef?: FormDefItemAction;
         persForm?: Form;
         // ----------------------------------------------------------------------------------------
-        constructor(pageDef: PageDef<App<any>,LayoutNcSc>, htmlEltId: string, persFormDef: PersFormDef) {
+        constructor(pageDef: PageDef<App<any>, LayoutNcSc>, htmlEltId: string, persFormDef: PersFormDef) {
             super(pageDef, htmlEltId);
             this.persFormDef = persFormDef;
         }
@@ -86,16 +86,17 @@ namespace reco.ui.form.test {
     }
     // ============================================================================================
     function runTest() {
-        resizeRootElement("test-form-root-div", 1.2, 2)
-        reco.core.ui.form.onstart = () => {
+        reco.ui.layout.RootPanel.addRootVerticalPanel("test-form-root-div", 60);
+        reco.ui.form.onstart = () => {
             const testDB = new TestDB();
             testDB.dbJsonLoad(testPDBJson);
+
 
             let app = new App(testDB);
             let pageDef = new PageDef(app, new LayoutNcSc("test-form-root-div"));
 
-            let persFormDef = new PersFormDef(pageDef, pageDef.layout.southcenterId)
-            let persListFormDef = new PersListFormDef(pageDef, pageDef.layout.northcenterId, persFormDef)
+            let persFormDef = new PersFormDef(pageDef, pageDef.layout.southCenterId)
+            let persListFormDef = new PersListFormDef(pageDef, pageDef.layout.northCenterId, persFormDef)
 
             app.display(persListFormDef, testDB.Persons, undefined)
         }

@@ -7,12 +7,12 @@
             item.obj = item.obj ? item.obj : form.obj;
             item.objList = item.objList ? item.objList : form.objList;
             form.debug("render form item",item)
-            if (itemDef instanceof reco.core.ui.form.FormDefItemTitle) { %>@@form/title@@<% } 
-            else if (itemDef instanceof reco.core.ui.form.FormDefItemLabel) { %>@@form/label@@<% }
-            else if (itemDef instanceof reco.core.ui.form.FormDefItemSimple) { %>@@form/simple@@<% }
-            else if (itemDef instanceof reco.core.ui.form.FormDefItemSelect) { %>@@form/select@@<% }
-            else if (itemDef instanceof reco.core.ui.form.FormDefItemActions) { %>@@form/actions@@<% }
-            else if (itemDef instanceof reco.core.ui.form.FormDefItemTable) { %>@@form/table@@<% }
+            if (itemDef instanceof reco.ui.form.FormDefItemTitle) { %>@@form/title@@<% } 
+            else if (itemDef instanceof reco.ui.form.FormDefItemLabel) { %>@@form/label@@<% }
+            else if (itemDef instanceof reco.ui.form.FormDefItemSimple) { %>@@form/simple@@<% }
+            else if (itemDef instanceof reco.ui.form.FormDefItemSelect) { %>@@form/select@@<% }
+            else if (itemDef instanceof reco.ui.form.FormDefItemActions) { %>@@form/actions@@<% }
+            else if (itemDef instanceof reco.ui.form.FormDefItemTable) { %>@@form/table@@<% }
        } 
     %>
     </div>
@@ -61,8 +61,8 @@
                     form.debug("render form template table header, colDef >",colDef);
                     let item = form.newItem(colDef, parent);
                     form.debug("render form template table header, col item >",item);
-                    let isColDefAction = colDef instanceof reco.core.ui.form.FormDefItemAction ||
-                                        colDef instanceof reco.core.ui.form.FormDefItemActions; %>
+                    let isColDefAction = colDef instanceof reco.ui.form.FormDefItemAction ||
+                                        colDef instanceof reco.ui.form.FormDefItemActions; %>
                 <th><%= isColDefAction ? "" : item.label %></th>
             <%  } %>
         </thead>
@@ -74,8 +74,8 @@
                         let item = form.newItem(colDef, parent);
                         item.obj = parent.objList[index];
                         form.debug("render form template table row, colDef, obj >",colDef,item.obj);
-                        let isColDefAction = colDef instanceof reco.core.ui.form.FormDefItemAction ||
-                                             colDef instanceof reco.core.ui.form.FormDefItemActions;
+                        let isColDefAction = colDef instanceof reco.ui.form.FormDefItemAction ||
+                                             colDef instanceof reco.ui.form.FormDefItemActions;
                         if (isColDefAction) { %> 
                             <td class="resizable <%=colDef.tdWidth !== 'false' && parent.itemDef.isResizable ? '' : 'not-resizable' %>" 
                                 reco-width="RECOPARENTWIDTH * <%=colDef.tdWidth%>" id="<%=item.id%>-value%>">

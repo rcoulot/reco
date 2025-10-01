@@ -481,7 +481,7 @@ namespace reco.ui.form {
     // ============================================================================================
     (async () => {
         const parser = new DOMParser()
-        let html = await (await fetch("../core/ui-form.html")).text()
+        let html = await (await fetch("/dist/reco/ui/form.html")).text()
         let doc = parser.parseFromString(html, "text/html")
         EJS.templatesDocuments["form"] = doc
         if (reco.ui.form.onstart) reco.ui.form.onstart()

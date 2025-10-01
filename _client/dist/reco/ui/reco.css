@@ -1,0 +1,171 @@
+/* ================================================================ */
+body {
+    background-color: black;
+}
+.root-panel {
+    background-color: white;
+}
+/* ================================================================ */
+.node-hidden {
+    display: none;
+}
+/* ================================================================ */
+div.node {
+    white-space: nowrap;
+}
+
+div.node>div {
+    margin-top: 0.1vw;
+    margin-bottom: 0.1vw;
+}
+
+div.node-indent {
+    display: inline-block;
+    min-width: 1.5em;
+    background-image: url(./images/tree-indent.png);
+    background-size: cover;
+}
+
+div.node-ico {
+    display: inline-block;
+    min-width: 1.5em;
+
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+div.node-ico-opened {
+    background-image: url(./images/tree-ico-opened.png);
+}
+
+div.node-ico-closed {
+    background-image: url(./images/tree-ico-closed.png);
+}
+
+div.node-ico:hover {
+    background-color: lightsalmon;
+    cursor: pointer;
+}
+
+div.node-ico-leaf {
+    display: inline-block;
+    min-width: 1.5em;
+    background-image: url(./images/tree-ico-leaf.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+div.node-label {
+    display: inline-block;
+    font-weight: bold;
+    color: blue;
+}
+
+div.node-label:hover {
+    background-color: rgb(255, 255, 117);
+    cursor: pointer;
+}
+
+div.node-action {
+    display: inline-block;
+    min-width: 1.5em;
+    background-image: url(./images/tree-action.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+div.node-action:hover {
+    background-color: lightsalmon;
+    cursor: pointer;
+}
+
+/* ================================================================ */
+.no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* ================================================================ */
+div.form {
+    display: grid;
+    grid-template-columns: max-content auto;
+    max-width: 100%;
+}
+
+div.form * {
+    margin: 2px 5px 2px 5px;
+}
+
+div.form .label {
+    color: blue;
+}
+
+div.form td button {
+    padding: 0;
+    margin: 0;
+}
+
+div.form button,
+div.form input,
+div.form select,
+div.form option {
+    font-size: inherit;
+}
+
+div.form .value {
+    color: purple;
+    border: thin solid gray;
+}
+
+div.form .editable {
+    background-color: lightyellow;
+}
+
+div.form option {
+    background-color: mintcream;
+    color: black;
+}
+
+div.form-title {
+    grid-column: 1 / span 2;
+    font-size: 150%;
+    font-weight: bold;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    border-bottom: 1px solid black;
+}
+
+div.table-label {
+    grid-column: 1 / span 2;
+}
+
+table.table-table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin: 5px;
+}
+
+table.table-table th {
+    border: thin solid gray;
+    padding: 2px 5px 2px 5px;
+    background-color: lightgray;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+table.table-table td {
+    border: thin solid gray;
+    padding: 2px 5px 2px 5px;
+    color: blue;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* ================================================================ */

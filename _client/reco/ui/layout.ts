@@ -6,11 +6,30 @@ namespace reco.ui.layout {
     // ============================================================================================
     export class RootPanel {
         // ----------------------------------------------------------------------------------------
+        static addRootFullPanel(idRootPanel: string): HTMLElement {
+            let divs = document.body.getElementsByTagName("div")
+            Array.from(divs).forEach(div => { div.remove(); });
+            let rootPanel = document.createElement("div")
+            rootPanel.id = idRootPanel;
+            rootPanel.className = "root-panel";
+            rootPanel.style.position = `absolute`;
+            rootPanel.style.top = `${margin}px`;
+            rootPanel.style.left = `${margin}px`;
+            rootPanel.style.width = `calc(100vw - ${2 * margin}px)`;
+            rootPanel.style.height = `calc(100vh - ${2 * margin}px)`;
+            rootPanel.style.overflow = "hidden";
+            // document.body.style.minWidth = rootPanel.style.width;
+            // rootPanel.style.backgroundColor = `yellow`;
+            document.body.append(rootPanel)
+            return rootPanel;
+        }
+        // ----------------------------------------------------------------------------------------
         static addRootVerticalPanel(idRootPanel: string, widthAsPercentOfHeight: number): HTMLElement {
             let divs = document.body.getElementsByTagName("div")
             Array.from(divs).forEach(div => { div.remove(); });
             let rootPanel = document.createElement("div")
             rootPanel.id = idRootPanel;
+            rootPanel.className = "root-panel";
             rootPanel.style.position = `absolute`;
             rootPanel.style.top = `${margin}px`;
             rootPanel.style.left = `max(0px, calc(${margin}px + 50vw - ${100 * widthAsPercentOfHeight / 200}vh))`;
@@ -165,8 +184,8 @@ namespace reco.ui.layout {
         onSlideMove(target: EventTarget | null, clientX: number, clientY: number) {
             if (this.splitHoriz.slider) {
                 let deltapos = clientY - this.splitHoriz.slider.pos;
-                Layout.setHeight(this.splitHoriz.slider.size1 + deltapos - margin/2, this.northCenter);
-                Layout.setHeight(this.splitHoriz.slider.size2 - deltapos - margin/2, this.southCenter);
+                Layout.setHeight(this.splitHoriz.slider.size1 + deltapos - margin / 2, this.northCenter);
+                Layout.setHeight(this.splitHoriz.slider.size2 - deltapos - margin / 2, this.southCenter);
                 Layout.reset("height", this.northCenter, this.southCenter);
             }
         }
@@ -220,13 +239,13 @@ namespace reco.ui.layout {
         onSlideMove(target: EventTarget | null, clientX: number, clientY: number) {
             if (this.splitHoriz.slider) {
                 let deltapos = clientY - this.splitHoriz.slider.pos;
-                Layout.setHeight(this.splitHoriz.slider.size1 + deltapos - margin/2, this.northWest, this.splitVert, this.northEast);
-                Layout.setHeight(this.splitHoriz.slider.size2 - deltapos - margin/2, this.southCenter);
+                Layout.setHeight(this.splitHoriz.slider.size1 + deltapos - margin / 2, this.northWest, this.splitVert, this.northEast);
+                Layout.setHeight(this.splitHoriz.slider.size2 - deltapos - margin / 2, this.southCenter);
                 Layout.reset("height", this.northWest, this.northEast, this.southCenter);
             } else if (this.splitVert.slider) {
                 let deltapos = clientX - this.splitVert.slider.pos;
-                this.northWest.style.width = (this.splitVert.slider.size1 + deltapos - margin/2) + 'px';
-                this.northEast.style.width = (this.splitVert.slider.size2 - deltapos - margin/2) + 'px';
+                this.northWest.style.width = (this.splitVert.slider.size1 + deltapos - margin / 2) + 'px';
+                this.northEast.style.width = (this.splitVert.slider.size2 - deltapos - margin / 2) + 'px';
                 Layout.reset("width", this.northWest, this.northEast);
             }
         }
@@ -237,6 +256,8 @@ namespace reco.ui.layout {
         }
         // ----------------------------------------------------------------------------------------
     }
+    // ============================================================================================
+    window.addEventListener("resize", () => { Layout.reset("both"); });
     // ============================================================================================
 }
 // ################################################################################################
