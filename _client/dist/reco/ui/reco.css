@@ -2,13 +2,21 @@
 body {
     background-color: black;
 }
+
 .root-panel {
-    background-color: white;
+    background-color: rgb(239, 237, 237);
 }
+
+.panel {
+    background-color: white;
+    border: 1px solid blue;
+}
+
 /* ================================================================ */
 .node-hidden {
     display: none;
 }
+
 /* ================================================================ */
 div.node {
     white-space: nowrap;
@@ -103,6 +111,7 @@ div.form * {
 
 div.form .label {
     color: blue;
+    font-weight: bold;
 }
 
 div.form td button {
@@ -162,7 +171,7 @@ table.table-table th {
 table.table-table td {
     border: thin solid gray;
     padding: 2px 5px 2px 5px;
-    color: blue;
+    color: purple;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

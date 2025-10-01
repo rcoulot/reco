@@ -57,7 +57,8 @@ namespace reco.ui.form.test {
             this.addSimpleDef("'Lastname'").setObjExp("item.obj", "lastname")
             this.addSelectDef("'City'", "form.db.Cities", "$id", "name").setObjExp("item.obj", "cityId")
             this.addSimpleDef("'Birth date'").setObjExp("item.obj", "birthdate")
-            let actions = this.addActionsDef("'Actions'", true)
+            //let actions = this.addActionsDef("'Actions'", true)
+            let actions = this.addActionsDef("", true)
             this.btPreviousItemDef = this.addActionDef("btPrevious", "'Previous'", actions)
             this.btNextItemDef = this.addActionDef("btNext", "'Next'", actions)
         }
@@ -86,7 +87,8 @@ namespace reco.ui.form.test {
     }
     // ============================================================================================
     function runTest() {
-        reco.ui.layout.RootPanel.addRootVerticalPanel("test-form-root-div", 60);
+        // reco.ui.layout.RootPanel.addRootVerticalPanel("test-form-root-div", 60);
+        reco.ui.layout.RootPanel.addRootFullPanel("test-form-root-div");
         reco.ui.form.onstart = () => {
             const testDB = new TestDB();
             testDB.dbJsonLoad(testPDBJson);

@@ -18,7 +18,6 @@ namespace reco.ui.layout {
             rootPanel.style.width = `calc(100vw - ${2 * margin}px)`;
             rootPanel.style.height = `calc(100vh - ${2 * margin}px)`;
             rootPanel.style.overflow = "hidden";
-            // document.body.style.minWidth = rootPanel.style.width;
             // rootPanel.style.backgroundColor = `yellow`;
             document.body.append(rootPanel)
             return rootPanel;
@@ -36,7 +35,6 @@ namespace reco.ui.layout {
             rootPanel.style.width = `calc(${100 * widthAsPercentOfHeight / 100}vh - ${2 * margin}px)`;
             rootPanel.style.height = `calc(100vh - ${2 * margin}px)`;
             rootPanel.style.overflow = "hidden";
-            // document.body.style.minWidth = rootPanel.style.width;
             // rootPanel.style.backgroundColor = `yellow`;
             document.body.append(rootPanel)
             return rootPanel;
@@ -89,7 +87,6 @@ namespace reco.ui.layout {
             if (cssClass) panel.className = cssClass;
             if (gridRow) panel.style.gridRow = gridRow;
             if (gridColumn) panel.style.gridColumn = gridColumn;
-            panel.style.border = "1px solid gray";
             panel.style.overflow = "auto";
             this.layoutElt.appendChild(panel);
             return panel;
@@ -168,6 +165,7 @@ namespace reco.ui.layout {
         }
         // ----------------------------------------------------------------------------------------
         display() {
+            if (this.parentElt.children.length > 0) return;
             super.display();
             this.createPanel(this.northCenterId, "panel northCenter");
             this.createSplit(this.splitHorizId, "HORIZONTAL");
@@ -219,6 +217,7 @@ namespace reco.ui.layout {
         }
         // ----------------------------------------------------------------------------------------
         display() {
+            if (this.parentElt.children.length > 0) return;
             super.display();
             this.createPanel(this.northWestId, "panel northWest");
             this.createSplit(this.splitVertId, "VERTICAL");
