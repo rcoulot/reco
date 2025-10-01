@@ -1,0 +1,97 @@
+<script type="text/template" id="template">
+    <div class="form" id="<%= form.id %>">
+    <%  
+        form.items = {};
+        for(let itemDef of form.formDef.itemsDef) { 
+            let item = form.newItem(itemDef);
+            item.obj = item.obj ? item.obj : form.obj;
+            item.objList = item.objList ? item.objList : form.objList;
+            form.debug("render form item",item)
+            if (itemDef instanceof reco.core.ui.form.FormDefItemTitle) { %>@@form/title@@<% } 
+            else if (itemDef instanceof reco.core.ui.form.FormDefItemLabel) { %>@@form/label@@<% }
+            else if (itemDef instanceof reco.core.ui.form.FormDefItemSimple) { %>@@form/simple@@<% }
+            else if (itemDef instanceof reco.core.ui.form.FormDefItemSelect) { %>@@form/select@@<% }
+            else if (itemDef instanceof reco.core.ui.form.FormDefItemActions) { %>@@form/actions@@<% }
+            else if (itemDef instanceof reco.core.ui.form.FormDefItemTable) { %>@@form/table@@<% }
+       } 
+    %>
+    </div>
+</script>
+<script type="text/template" id="title"><% form.debug("render form template title, item >",item);  %>
+    <div class="form-title <%=item.cssClassObjId%>" id="<%=item.id%>-title"><%= item.label%></div>
+</script>
+<script type="text/template" id="label"><% form.debug("render form template label, item >",item);  %>
+    <div class="label-label label" id="<%=item.id%>-label"><%= item.label %></div>
+    <div class="label-value value <%=item.cssClassObjId%>" id="<%=item.id%>-value"><%= item.value %></div>
+</script>
+<script type="text/template" id="simple">
+    <div class="simple-label label" id="<%=item.id%>-label"><%= item.label %></div>
+    <input class="simple-input value editable <%=item.cssClassObjId%>"  id="<%=item.id%>-input"" type="text" value="<%= item.value %>">
+</script>
+<script type="text/template" id="select"><% form.debug("render form template select, item >",item);  %>
+    <div class="select-label label" id="<%=item.id%>-label"><%= item.label %></div>
+    <select class="select-select value editable <%=item.cssClassObjId%>"  id="<%=item.id%>-select">
+        <%  let selectedValue = item.value
+            for(let option of item.selectOptions) { %>
+            <option value="<%= option.value %>" <%= option.value === selectedValue ? 'selected' : '' %> ><%= option.label %></option>
+        <% } %>
+    </select>
+</script>
+<script type="text/template" id="action"><% form.debug("render form template action, item >",item);  %>
+</script>
+<script type="text/template" id="actions"><% form.debug("render form template actions, item >",item);  %>
+    <div class="actions-label label" id="<%=item.id%>-label"><%= item.label %></div>
+    <div class="actions-buttons">
+        <%  let parent = item;
+            for(let actionDef of parent.itemDef.actionsDef) { 
+            let item = form.newItem(actionDef,parent); %>
+            <button type="button" class="action-button" id="<%= item.id %>"><%= item.label %></button>
+        <% } %>
+    </div>
+</script>
+<script type="text/template" id="table"><% form.debug("render form template table, item >",item);  %>
+    <div class="table-label label"><%= item.label %></div>
+    <div class="div-table">
+    <table class="table-table resizable<%= item.itemDef.isResizable ? '' : ' not-resizable' %>" reco-width="RECOPAGEWIDTH - 20">
+        <thead>
+            <% let parent = item;
+                form.debug("render form template table header, parent >",parent);
+                for(let colDef of parent.itemDef.colsDef) { 
+                    colDef.tdWidth = colDef.tdWidth ? colDef.tdWidth : (100/parent.itemDef.colsDef.length)+"%";
+                    form.debug("render form template table header, colDef >",colDef);
+                    let item = form.newItem(colDef, parent);
+                    form.debug("render form template table header, col item >",item);
+                    let isColDefAction = colDef instanceof reco.core.ui.form.FormDefItemAction ||
+                                        colDef instanceof reco.core.ui.form.FormDefItemActions; %>
+                <th><%= isColDefAction ? "" : item.label %></th>
+            <%  } %>
+        </thead>
+        <tbody>
+            <%  form.debug("table parent.objList => ",parent.objList);
+                for(let index=0;index < parent.objList.length;index++) { %>
+            <tr>
+            <%      for(let colDef of item.itemDef.colsDef) {
+                        let item = form.newItem(colDef, parent);
+                        item.obj = parent.objList[index];
+                        form.debug("render form template table row, colDef, obj >",colDef,item.obj);
+                        let isColDefAction = colDef instanceof reco.core.ui.form.FormDefItemAction ||
+                                             colDef instanceof reco.core.ui.form.FormDefItemActions;
+                        if (isColDefAction) { %> 
+                            <td class="resizable <%=colDef.tdWidth !== 'false' && parent.itemDef.isResizable ? '' : 'not-resizable' %>" 
+                                reco-width="RECOPARENTWIDTH * <%=colDef.tdWidth%>" id="<%=item.id%>-value%>">
+                                <button type="button" class="action-button" id="<%= item.id %>" title="<%= item.label %>">
+                                <%= item.label %></button>
+                            </td> <%  
+                        } else { %>
+                            <td class="<%=item.cssClassObjId%> resizable <%=colDef.tdWidth !== 'false' && parent.itemDef.isResizable ? '' : 'not-resizable' %>" 
+                                reco-width="RECOPARENTWIDTH * <%=colDef.tdWidth%>" 
+                                id="<%=item.id%>-value%>" 
+                                title="<%= item.value %>"= ><%= item.value %></td>
+                    <%  }
+                    } %>
+            </tr>
+            <%  } %>
+        </tbody>
+    </table>
+    </div>
+</script>

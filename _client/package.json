@@ -1,0 +1,17 @@
+{
+  "name": "reco",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "watch-core": "cd reco/core && tsc --watch",
+    "watch-ui": "cd reco/ui && tsc --watch",
+    "watch-tests": "cd test && tsc --watch",
+    "server": "http-server -a 0.0.0.0 -p 3000"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^24.0.7"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "json.schemas": [],
+  "files.exclude": {
+    "**/*.js": {
+      "when": "$(basename).ts"
+    },
+    "_client/test/**/*.js.map": true,
+    "_client/test/**/*.d.ts": true,
+    "**/*-lock.json": true,
+    "**/node_modules": true,
+
+    
+    "**/tsconfig.json": false
+  }
+}
