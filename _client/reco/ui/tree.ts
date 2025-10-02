@@ -8,25 +8,13 @@ namespace reco.core.ui.tree {
     export class TreeUI<DB extends PDB> {
         // ----------------------------------------------------------------------------------------
         treeHandler: TreeHandler<DB>;
-        elt: HTMLElement;
+        eltId: string;
+        get elt(): HTMLElement { return document.getElementById(this.eltId) as HTMLElement; }
         // ----------------------------------------------------------------------------------------
-        constructor(elt: HTMLElement, nodes: TreeHandler<DB>) {
+        constructor(eltId: string, nodes: TreeHandler<DB>) {
             this.treeHandler = nodes;
-            this.elt = elt;
+            this.eltId = eltId;
             this.elt.innerHTML = "";
-            this.elt.onclick = (e: MouseEvent) => {
-                let target = e.target as HTMLElement;
-                let id = target.id;
-                if (!id) id = target.parentElement!.id;
-                if (!id) return;
-                if (id === this.elt.id) return;
-                let node = this.treeHandler.nodeById(id);
-                if (node) {
-                    if (target.classList.contains('node-ico')) this.onIconClick(node);
-                    else if (target.classList.contains('node-label')) this.treeHandler.onLabelClick?.(node);
-                    else if (target.classList.contains('node-action')) this.treeHandler.onActionClick?.(node);
-                }
-            };
         }
         // ----------------------------------------------------------------------------------------
         onIconClick(actionNode: PObj<DB>) {
@@ -52,6 +40,19 @@ namespace reco.core.ui.tree {
         // ----------------------------------------------------------------------------------------
         display() {
             let html = ""
+            this.elt.onclick = (e: MouseEvent) => {
+                let target = e.target as HTMLElement;
+                let id = target.id;
+                if (!id) id = target.parentElement!.id;
+                if (!id) return;
+                if (id === this.elt.id) return;
+                let node = this.treeHandler.nodeById(id);
+                if (node) {
+                    if (target.classList.contains('node-ico')) this.onIconClick(node);
+                    else if (target.classList.contains('node-label')) this.treeHandler.onLabelClick?.(node);
+                    else if (target.classList.contains('node-action')) this.treeHandler.onActionClick?.(node);
+                }
+            };
             for (let node of this.treeHandler.list()) {
                 let id = this.treeHandler.id(node);
                 let depth = this.treeHandler.depth(node);

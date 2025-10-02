@@ -11,7 +11,7 @@ namespace reco.core.ui.tree.test {
         reco.ui.layout.RootPanel.addRootFullPanel("root");
         let layout = new LayoutNcSc("root")
         layout.display();
-        new TreeUI(layout.northCenter, new GeoTreeHandler(testDB)).display();
+        new TreeUI(layout.northCenterId, new GeoTreeHandler(testDB)).display();
     }
     // ============================================================================================
     testtree()
