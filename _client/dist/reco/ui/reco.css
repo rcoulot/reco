@@ -37,7 +37,6 @@ div.node-indent {
 div.node-ico {
     display: inline-block;
     min-width: 1.5em;
-
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -99,12 +98,6 @@ div.node-action:hover {
 }
 
 /* ================================================================ */
-div.form {
-    display: grid;
-    grid-template-columns: max-content auto;
-    max-width: 100%;
-}
-
 div.form * {
     margin: 2px 5px 2px 5px;
 }
@@ -141,7 +134,6 @@ div.form option {
 }
 
 div.form-title {
-    grid-column: 1 / span 2;
     font-size: 150%;
     font-weight: bold;
     margin-top: 0.5em;
@@ -149,13 +141,8 @@ div.form-title {
     border-bottom: 1px solid black;
 }
 
-div.table-label {
-    grid-column: 1 / span 2;
-}
-
 table.table-table {
     border-collapse: collapse;
-    table-layout: fixed;
     margin: 5px;
 }
 
@@ -163,18 +150,12 @@ table.table-table th {
     border: thin solid gray;
     padding: 2px 5px 2px 5px;
     background-color: lightgray;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
 }
 
 table.table-table td {
     border: thin solid gray;
     padding: 2px 5px 2px 5px;
     color: purple;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
 }
 
 /* ================================================================ */

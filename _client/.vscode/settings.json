@@ -6,6 +6,8 @@
     },
     "test/**/*.js.map": true,
     "test/**/*.d.ts": true,
+    "dist/**/*.js.map": true,
+    "dist/**/*.d.ts": true,
     "**/*-lock.json": true,
     "**/node_modules": true,
 

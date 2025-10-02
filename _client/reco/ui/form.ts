@@ -6,6 +6,8 @@ namespace reco.ui.form {
     import PObj = reco.core.db.PObj
     import PObjChange = reco.core.db.PObjChange
     import Layout = reco.ui.layout.Layout;
+    import TreeHandler = reco.core.db.TreeHandler;
+    import TreeUI = reco.ui.tree.TreeUI;
     import SEQ = reco.core.SEQ;
     // ============================================================================================
     export var onstart: () => void | undefined;
@@ -83,6 +85,17 @@ namespace reco.ui.form {
                 this.formDef.itemsDef.splice(this.formDef.itemsDef.length - 1, 1)
                 this.table.colsDef.push(this);
             }
+        }
+        // ----------------------------------------------------------------------------------------
+    }
+    // ============================================================================================
+    export class FormDefItemTree extends FormItemSinglePObj<FormDefItemSimple> {
+        // ----------------------------------------------------------------------------------------
+        treeHandler: TreeHandler<any>;
+        // ----------------------------------------------------------------------------------------
+        constructor(form: FormDef, labelExp: string, treeHandler: TreeHandler<any>) {
+            super(form, labelExp);
+            this.treeHandler = treeHandler;
         }
         // ----------------------------------------------------------------------------------------
     }
@@ -190,10 +203,7 @@ namespace reco.ui.form {
             this.id = id ? id : "FormDef" + (++SEQ.val);
             this.pageDef.formDefDict[this.id] = this;
             this.pageDef.formDefs.push(this);
-            this.init();
         }
-        // ----------------------------------------------------------------------------------------
-        init() { }
         // ----------------------------------------------------------------------------------------
         addTitleDef(idExp: string, labelExp: string): FormDefItemTitle {
             return new FormDefItemTitle(this, labelExp);
@@ -205,6 +215,10 @@ namespace reco.ui.form {
         // ----------------------------------------------------------------------------------------
         addSimpleDef(labelExp: string, table?: FormDefItemTable, tdWidth?: string): FormDefItemSimple {
             return new FormDefItemSimple(this, labelExp, table, tdWidth);
+        }
+        // ----------------------------------------------------------------------------------------
+        addTreeDef(labelExp: string, treeHandler: TreeHandler<any>): FormDefItemTree {
+            return new FormDefItemTree(this, labelExp, treeHandler);
         }
         // ----------------------------------------------------------------------------------------
         addSelectDef(labelExp: string, optionsExp: string, optionIdField: string, optionValueField: string, table?: FormDefItemTable, tdWidth?: string): FormDefItemSelect {
@@ -247,7 +261,7 @@ namespace reco.ui.form {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    export class App<D extends PDB>   {
+    export class App<D extends PDB> {
         // ----------------------------------------------------------------------------------------
         private _db?: D;
         pageDefDict: { [id: string]: PageDef<any, any> } = {};
@@ -385,6 +399,11 @@ namespace reco.ui.form {
             let context = { form: this }
             // console.log("Form.displayForm() context", context)
             elt.innerHTML = EJS.render("@@form/template@@", context);
+            let treeDivs = elt.getElementsByClassName("div-tree")
+            for (let treeDiv of treeDivs) {
+                let itemDef = this.items[treeDiv.id].itemDef as FormDefItemTree;
+                new TreeUI(treeDiv.id, itemDef.treeHandler).display();
+            }
             let actionButtons = elt.getElementsByClassName("action-button")
             for (let button of actionButtons) {
                 button.addEventListener("click", (event) => {

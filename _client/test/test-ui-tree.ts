@@ -1,5 +1,5 @@
 // ################################################################################################
-namespace reco.core.ui.tree.test {
+namespace reco.ui.tree.test {
     import TestDB = reco.core.test.data.TestDB
     import testPDBJson = reco.core.test.data.testPDBJson
     import GeoTreeHandler = reco.core.test.data.GeoTreeHandler

@@ -4,6 +4,8 @@
     "**/*.js": {
       "when": "$(basename).ts"
     },
+    "_client/dist/**/*.js.map": true,
+    "_client/dist/**/*.d.ts": true,
     "_client/test/**/*.js.map": true,
     "_client/test/**/*.d.ts": true,
     "**/*-lock.json": true,

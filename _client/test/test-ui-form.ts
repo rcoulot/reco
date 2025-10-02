@@ -3,12 +3,13 @@ namespace reco.ui.form.test {
     // ============================================================================================
     import testPDBJson = reco.core.test.data.testPDBJson
     import TestDB = reco.core.test.data.TestDB
-    import LayoutNcSc = reco.ui.layout.LayoutNcSc;
+    import LayoutWcEnEs = reco.ui.layout.LayoutWcEnEs;
     import App = reco.ui.form.App;
     import PageDef = reco.ui.form.PageDef;
     import FormDef = reco.ui.form.FormDef;
     import FormDefItemAction = reco.ui.form.FormDefItemAction;
     import Form = reco.ui.form.Form;
+    import GeoTreeHandler = reco.core.test.data.GeoTreeHandler
     // ============================================================================================
     export class PersListFormDef extends FormDef {
         // ----------------------------------------------------------------------------------------
@@ -16,12 +17,9 @@ namespace reco.ui.form.test {
         btShowItemDef?: FormDefItemAction;
         persForm?: Form;
         // ----------------------------------------------------------------------------------------
-        constructor(pageDef: PageDef<App<any>, LayoutNcSc>, htmlEltId: string, persFormDef: PersFormDef) {
+        constructor(pageDef: PageDef<App<any>, LayoutWcEnEs>, htmlEltId: string, persFormDef: PersFormDef) {
             super(pageDef, htmlEltId);
             this.persFormDef = persFormDef;
-        }
-        // ----------------------------------------------------------------------------------------
-        init() {
             this.addTitleDef("'title'", "'Form for List of Persons'")
             let tableDef = this.addTableDef("'Persons Table'").addObjListExp("form.Persons")//.notResizable()
             this.addLabelDef("'Identifier'", undefined, tableDef, "false").setObjExp("item.obj", "$id")
@@ -50,7 +48,8 @@ namespace reco.ui.form.test {
         btNextItemDef?: FormDefItemAction;
         btPreviousItemDef?: FormDefItemAction;
         // ----------------------------------------------------------------------------------------
-        init() {
+        constructor(pageDef: PageDef<App<any>, LayoutWcEnEs>, htmlEltId: string) {
+            super(pageDef, htmlEltId);
             this.addTitleDef("'title'", "'Person'")
             this.addLabelDef("'Identifier'").setObjExp("item.obj", "$id")
             this.addSimpleDef("'Firstname'").setObjExp("item.obj", "firstname")
@@ -86,20 +85,33 @@ namespace reco.ui.form.test {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
+    export class TreeFormDef extends FormDef {
+        geoTreeHandler: GeoTreeHandler;
+        // ----------------------------------------------------------------------------------------
+        constructor(pageDef: PageDef<App<any>, LayoutWcEnEs>, htmlEltId: string, geoTreeHandler: GeoTreeHandler) {
+            super(pageDef, htmlEltId);
+            this.geoTreeHandler = geoTreeHandler;
+            this.addTreeDef("'Geo Tree'", this.geoTreeHandler);
+        }
+        // ----------------------------------------------------------------------------------------
+    }
+    // ============================================================================================
     function runTest() {
         // reco.ui.layout.RootPanel.addRootVerticalPanel("test-form-root-div", 60);
         reco.ui.layout.RootPanel.addRootFullPanel("test-form-root-div");
         reco.ui.form.onstart = () => {
             const testDB = new TestDB();
             testDB.dbJsonLoad(testPDBJson);
-
+            let geoTreeHandler = new GeoTreeHandler(testDB)
 
             let app = new App(testDB);
-            let pageDef = new PageDef(app, new LayoutNcSc("test-form-root-div"));
+            let pageDef = new PageDef(app, new LayoutWcEnEs("test-form-root-div","1fr 10px 3fr","2fr 10px 1fr"));
 
-            let persFormDef = new PersFormDef(pageDef, pageDef.layout.southCenterId)
-            let persListFormDef = new PersListFormDef(pageDef, pageDef.layout.northCenterId, persFormDef)
+            let treeFormDef = new TreeFormDef(pageDef, pageDef.layout.westCenterId, geoTreeHandler)
+            let persFormDef = new PersFormDef(pageDef, pageDef.layout.eastSouthId)
+            let persListFormDef = new PersListFormDef(pageDef, pageDef.layout.eastNorthId, persFormDef)
 
+            app.display(treeFormDef, testDB.Persons, undefined)
             app.display(persListFormDef, testDB.Persons, undefined)
         }
     }

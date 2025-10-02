@@ -157,8 +157,8 @@ namespace reco.ui.layout {
         get southCenter(): HTMLElement { return document.getElementById(this.southCenterId)!; }
         get splitHoriz(): Slider { return document.getElementById(this.splitHorizId)! as Slider; }
         // ----------------------------------------------------------------------------------------
-        constructor(idParentElt: string) {
-            super(idParentElt, "1fr", "1fr 10px 1fr");
+        constructor(idParentElt: string, gridTemplateRows?: string) {
+            super(idParentElt, "1fr", gridTemplateRows ? gridTemplateRows : "1fr 10px 1fr");
             this.northCenterId = "panel-" + (++SEQ.val);
             this.southCenterId = "panel-" + (++SEQ.val);
             this.splitHorizId = "split-" + (++SEQ.val);
@@ -207,8 +207,8 @@ namespace reco.ui.layout {
         get splitHoriz(): Slider { return document.getElementById(this.splitHorizId)! as Slider; }
         get splitVert(): Slider { return document.getElementById(this.splitVertId)! as Slider; }
         // ----------------------------------------------------------------------------------------
-        constructor(idParentElt: string) {
-            super(idParentElt, "1fr 10px 1fr", "1fr 10px 1fr");
+        constructor(idParentElt: string, gridTemplateColumns?: string, gridTemplateRows?: string) {
+            super(idParentElt, gridTemplateColumns ? gridTemplateColumns : "1fr 10px 1fr", gridTemplateRows ? gridTemplateRows : "1fr 10px 1fr");
             this.northWestId = "panel-" + (++SEQ.val);
             this.northEastId = "panel-" + (++SEQ.val);
             this.southCenterId = "panel-" + (++SEQ.val);
@@ -243,9 +243,71 @@ namespace reco.ui.layout {
                 Layout.reset("height", this.northWest, this.northEast, this.southCenter);
             } else if (this.splitVert.slider) {
                 let deltapos = clientX - this.splitVert.slider.pos;
-                this.northWest.style.width = (this.splitVert.slider.size1 + deltapos - margin / 2) + 'px';
-                this.northEast.style.width = (this.splitVert.slider.size2 - deltapos - margin / 2) + 'px';
+                Layout.setWidth(this.splitVert.slider.size1 + deltapos - margin / 2, this.northWest);
+                Layout.setWidth(this.splitVert.slider.size2 - deltapos - margin / 2, this.northEast);
                 Layout.reset("width", this.northWest, this.northEast);
+            }
+        }
+        // ----------------------------------------------------------------------------------------
+        onSlideEnd() {
+            this.splitHoriz.slider = undefined;
+            this.splitVert.slider = undefined;
+        }
+        // ----------------------------------------------------------------------------------------
+    }
+    // ============================================================================================
+    export class LayoutWcEnEs extends Layout {
+        // ----------------------------------------------------------------------------------------
+        westCenterId: string;
+        eastNorthId: string;
+        eastSouthId: string;
+        splitVertId: string;
+        splitHorizId: string;
+        get westCenter(): HTMLElement { return document.getElementById(this.westCenterId)!; }
+        get eastNorth(): HTMLElement { return document.getElementById(this.eastNorthId)!; }
+        get eathSouth(): HTMLElement { return document.getElementById(this.eastSouthId)!; }
+        get splitVert(): Slider { return document.getElementById(this.splitVertId)! as Slider; }
+        get splitHoriz(): Slider { return document.getElementById(this.splitHorizId)! as Slider; }
+        // ----------------------------------------------------------------------------------------
+        constructor(idParentElt: string, gridTemplateColumns?: string, gridTemplateRows?: string) {
+            super(idParentElt, gridTemplateColumns ? gridTemplateColumns : "1fr 10px 1fr", gridTemplateRows ? gridTemplateRows : "1fr 10px 1fr");
+            this.westCenterId = "panel-" + (++SEQ.val);
+            this.eastNorthId = "panel-" + (++SEQ.val);
+            this.eastSouthId = "panel-" + (++SEQ.val);
+            this.splitVertId = "split-" + (++SEQ.val);
+            this.splitHorizId = "split-" + (++SEQ.val);
+        }
+        // ----------------------------------------------------------------------------------------
+        display() {
+            if (this.parentElt.children.length > 0) return;
+            super.display();
+            this.createPanel(this.westCenterId, "panel westCenter", undefined, "1 / span 3");
+            this.createSplit(this.splitVertId, "VERTICAL", undefined, "1 / span 3");
+            this.createPanel(this.eastNorthId, "panel eastNorth");
+            this.createSplit(this.splitHorizId, "HORIZONTAL");
+            this.createPanel(this.eastSouthId, "panel eastSouth");
+            this.addEventListener(this.layoutElt, this.westCenter, this.eastNorth, this.eathSouth, this.splitHoriz, this.splitVert);
+        }
+        // ----------------------------------------------------------------------------------------
+        onSlideStart(target: EventTarget | null, clientX: number, clientY: number) {
+            if (target === this.splitHoriz) {
+                this.splitHoriz.slider = { pos: clientY, size1: this.eastNorth.offsetHeight, size2: this.eathSouth.offsetHeight };
+            } else if (target === this.splitVert) {
+                this.splitVert.slider = { pos: clientX, size1: this.westCenter.offsetWidth, size2: this.splitHoriz.offsetWidth };
+            }
+        }
+        // ----------------------------------------------------------------------------------------
+        onSlideMove(target: EventTarget | null, clientX: number, clientY: number) {
+            if (this.splitHoriz.slider) {
+                let deltapos = clientY - this.splitHoriz.slider.pos;
+                Layout.setHeight(this.splitHoriz.slider.size1 + deltapos - margin / 2, this.eastNorth);
+                Layout.setHeight(this.splitHoriz.slider.size2 - deltapos - margin / 2, this.eathSouth);
+                Layout.reset("width", this.eastNorth, this.eathSouth);
+            } else if (this.splitVert.slider) {
+                let deltapos = clientX - this.splitVert.slider.pos;
+                Layout.setWidth(this.splitVert.slider.size1 + deltapos - margin / 2, this.westCenter);
+                Layout.setWidth(this.splitVert.slider.size2 - deltapos - margin / 2, this.eastNorth, this.splitHoriz, this.eathSouth);
+                Layout.reset("height", this.westCenter, this.eastNorth, this.eathSouth);
             }
         }
         // ----------------------------------------------------------------------------------------
