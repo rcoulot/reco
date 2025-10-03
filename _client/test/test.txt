@@ -1,0 +1,7 @@
+Hello It is a test file.
+Used to test read and write file.
+coucou
+c'est moi
+Welcome
+Hello
+Qui est là ???
