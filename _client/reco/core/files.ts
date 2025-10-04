@@ -62,24 +62,28 @@ namespace reco.core.files {
             return content ? new Blob([content], { type: "text/plain" }) : undefined
         },
         // ----------------------------------------------------------------------------------------
-        pickFile: async function (accept: string | undefined = undefined): Promise<FileData> {
-            return new Promise((resolve, reject) => {
-                let input = document.createElement('input')
-                input.type = 'file'
-                if (accept) input.accept = accept
-                input.addEventListener('change', async function (event) {
-                    const file = input!.files![0]
-                    let text = await Files.blobToString(file)
-                    console.log(`RecoFS.loadBrowserFile`, file)
-                    resolve(await new FileData().init(file.name, file))
-                })
-                input.click()
-            })
+        pickFile: async function (mimeType: string | undefined = undefined, ...accept: string[]): Promise<FileData | undefined> {
+            const pickerOpts: any = { types: [], excludeAcceptAllOption: true, multiple: false };
+            if (mimeType) pickerOpts.types.push({ description: "", accept: { [mimeType]: accept }, });
+            try { //@ts-ignore
+                let fileHandles: FileSystemFileHandle[] = await window.showOpenFilePicker(pickerOpts);
+                let fileHandle = fileHandles[0];
+                const file = await fileHandle.getFile();
+                return await new FileData().init(file.name, file, fileHandle);
+            } catch (error) {
+                return undefined;
+            }
         },
         // ----------------------------------------------------------------------------------------
         /** @returns { Promise<FileData> } */
         pickImage: async function () {
             return Files.pickFile("image/*")
+        },
+        // ----------------------------------------------------------------------------------------
+        savePickFile: async function (fileData: FileData): Promise<void> {
+            const writable = await fileData!.fileHandle!.createWritable();
+            await writable.write(fileData!.blob!);
+            await writable.close();
         },
         // ----------------------------------------------------------------------------------------
         extension: function (filename: string): string {
@@ -93,16 +97,30 @@ namespace reco.core.files {
     // ============================================================================================
     export class FileData {
         // ----------------------------------------------------------------------------------------
-        name?: string;
-        blob?: Blob;
-        text?: string;
-        size?: number;
+        _fileHandle: FileSystemFileHandle | undefined;
+        _name?: string;
+        _blob?: Blob;
+        _text?: string;
+        get fileHandle(): FileSystemFileHandle | undefined { return this._fileHandle }
+        get name(): string | undefined { return this._name }
+        get blob(): Blob | undefined { return this._blob }
+        get text(): string | undefined { return this._text }
+        get size(): number { return this._blob!.size }
+        set name(val: string) { this._name = val }
+        async setBlob(val: Blob) {
+            this._blob = val
+            this._text = this._blob ? await this._blob.text() : undefined
+        }
+        set text(val: string) {
+            this._text = val
+            this._blob = Files.stringToBlob(val)
+        }
         // ----------------------------------------------------------------------------------------
-        async init(name: string, blob: Blob) {
-            this.name = name
-            this.blob = blob
-            this.text = this.blob ? await this.blob.text() : undefined
-            this.size = this.blob ? this.blob.size : 0
+        async init(name: string, blob: Blob, fileHandle: FileSystemFileHandle): Promise<FileData> {
+            this._name = name
+            this._blob = blob
+            this._text = this._blob ? await this._blob.text() : undefined
+            this._fileHandle = fileHandle
             return this
         }
         // ----------------------------------------------------------------------------------------
