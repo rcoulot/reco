@@ -1,15 +1,17 @@
 {
   "compilerOptions": {
+    
     "module": "amd",
     "target": "ES2021",
-    "outFile": "../dist/reco/core/index.js",
-    "declaration": true,
+    "outDir": "../../test",
+    "declaration": false,
     "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true
   },
   "include": [
-    "./**/*.ts"
+    "./**/*.ts",
+    "../../reco/**/*.d.ts",
   ]
 }

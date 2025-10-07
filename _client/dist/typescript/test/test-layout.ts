@@ -6,7 +6,7 @@ namespace reco.test {
     import LayoutNwNeSc = reco.ui.layout.LayoutNwNeSc;
     import LayoutWcEnEs = reco.ui.layout.LayoutWcEnEs;
     // ============================================================================================
-    reco.ui.layout.RootPanel.addRootVerticalPanel("root", 50);
+    reco.ui.layout.RootPanel.addRootVerticalPanel("root", 75);
     // let testcase = "NcSc";
     // let testcase = "NwNeSc";
     let testcase = "LayoutWcEnEs";

@@ -9,17 +9,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reco EJS Test</title>
-    <link rel="stylesheet" href="/dist/reco/ui/reco.css">
-    <script src="../dist/lib/ejs.min.js"></script>
-    <script src="../dist/lib/viz-standalone.js"></script>
-    <script src="../dist/lib/eruda.js"></script>
-    <script src="../dist/lib/reco-lib.js"></script>
-    <script src="../dist/lib/reco-core.js"></script>
+    <link rel="stylesheet" href="../reco/ui/reco.css">
+    <script src="../lib/ejs.min.js"></script>
+    <script src="../lib/viz-standalone.js"></script>
+    <script src="../lib/eruda.js"></script>
+    <script src="../lib/reco-lib.js"></script>
+    <script src="../reco/core/index.js"></script>
 </head>
 
 <body>
-    <h1>Welcome to Reco EJS Test</h1>
-    <div id="output"></div>
+    <div style="background-color: white;">
+        <h1>Welcome to Reco EJS Test</h1>
+        <div id="output"></div>
+    </div>
     <script type="text/template" id="ejs1">
         <h1><%=title %></h1>
         <hr>
