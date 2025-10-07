@@ -3,6 +3,7 @@
     
     "module": "amd",
     "target": "ES2021",
+    "outDir": "../dist/test",
     "declaration": false,
     "sourceMap": true,
     "strict": true,

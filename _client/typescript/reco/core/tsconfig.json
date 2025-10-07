@@ -2,8 +2,7 @@
   "compilerOptions": {
     "module": "amd",
     "target": "ES2021",
-    "outDir": "../../dist",
-    "outFile": "../../dist/reco-core.js",
+    "outFile": "../dist/reco/core/index.js",
     "declaration": true,
     "sourceMap": true,
     "strict": true,

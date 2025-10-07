@@ -2,22 +2,15 @@
   "compilerOptions": {
     "module": "amd",
     "target": "ES2021",
-    "outFile": "../../dist/reco-ui.js",
+    "outDir": "../dist",
+    "outFile": "../dist/design-app/index.js",
     "declaration": true,
     "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "files": [
-    "./layout.ts",
-    "./tree.ts",
-    "./form.ts"
-  ],
   "include": [
-    "../../dist/**/*.d.ts"
-  ],
-  "exclude": [
-    "../../dist/reco-ui.d.ts"
+    "./**/*.ts"
   ]
 }

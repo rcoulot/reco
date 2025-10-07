@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "watch-core": "cd reco/core && tsc --watch",
-    "watch-ui": "cd reco/ui && tsc --watch",
+    "watch-core": "cd typescript/reco/core && tsc --watch",
+    "watch-ui": "cd typescript/reco/ui && tsc --watch",
     "watch-tests": "cd test && tsc --watch",
     "server": "http-server -a 0.0.0.0 -p 3000",
     "ssl-server": "http-server -p 443 -S -C ./ssl-cert.pem -K ./ssl-key.pem"
