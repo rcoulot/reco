@@ -4,6 +4,9 @@ _client/dist/reco/**/*.d.ts
 _client/dist/test/**/*.js
 _client/dist/test/**/*.js.map
 _client/dist/test/**/*.d.ts
+_client/dist/design/**/*.js
+_client/dist/design/**/*.js.map
+_client/dist/design/**/*.d.ts
 _client/node_modules
 
 _server/reco/**/*.js
