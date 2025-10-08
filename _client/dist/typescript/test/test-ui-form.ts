@@ -11,7 +11,7 @@ namespace reco.ui.form.test {
     import Form = reco.ui.form.Form;
     import GeoTreeHandler = reco.core.test.data.GeoTreeHandler
     // ============================================================================================
-    export class PersListFormDef extends FormDef {
+    export class PersListFormDef extends FormDef<any> {
         // ----------------------------------------------------------------------------------------
         persFormDef: PersFormDef;
         btShowItemDef?: FormDefItemAction;
@@ -43,7 +43,7 @@ namespace reco.ui.form.test {
 
     }
     // ============================================================================================
-    export class PersFormDef extends FormDef {
+    export class PersFormDef extends FormDef<any> {
         // ----------------------------------------------------------------------------------------
         btNextItemDef?: FormDefItemAction;
         btPreviousItemDef?: FormDefItemAction;
@@ -85,7 +85,7 @@ namespace reco.ui.form.test {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    export class TreeFormDef extends FormDef {
+    export class TreeFormDef extends FormDef<any> {
         geoTreeHandler: GeoTreeHandler;
         // ----------------------------------------------------------------------------------------
         constructor(pageDef: PageDef<App<any>, LayoutWcEnEs>, htmlEltId: string, geoTreeHandler: GeoTreeHandler) {
@@ -105,7 +105,7 @@ namespace reco.ui.form.test {
             let geoTreeHandler = new GeoTreeHandler(testDB)
 
             let app = new App(testDB);
-            let pageDef = new PageDef(app, new LayoutWcEnEs("test-form-root-div","1fr 10px 3fr","2fr 10px 1fr"));
+            let pageDef = new PageDef(app, new LayoutWcEnEs("test-form-root-div",false));
 
             let treeFormDef = new TreeFormDef(pageDef, pageDef.layout.westCenterId, geoTreeHandler)
             let persFormDef = new PersFormDef(pageDef, pageDef.layout.eastSouthId)

@@ -2,8 +2,8 @@
   "compilerOptions": {
     "module": "amd",
     "target": "ES2021",
-    "outDir": "../dist",
-    "outFile": "../dist/design-app/index.js",
+    "outDir": "../../design",
+    "outFile": "../../design/index.js",
     "declaration": true,
     "sourceMap": true,
     "strict": true,
@@ -11,6 +11,7 @@
     "skipLibCheck": true
   },
   "include": [
-    "./**/*.ts"
+    "./**/*.ts",
+    "../../reco/**/*.d.ts",
   ]
 }

@@ -14,6 +14,7 @@
             else if (itemDef instanceof reco.ui.form.FormDefItemSimple) { %>@@form/simple@@<% }
             else if (itemDef instanceof reco.ui.form.FormDefItemTree) { %>@@form/tree@@<% }
             else if (itemDef instanceof reco.ui.form.FormDefItemSelect) { %>@@form/select@@<% }
+            else if (itemDef instanceof reco.ui.form.FormDefItemAction) { %>@@form/action@@<% }
             else if (itemDef instanceof reco.ui.form.FormDefItemActions) { %>@@form/actions@@<% }
             else if (itemDef instanceof reco.ui.form.FormDefItemTable) { %>@@form/table@@<% }
        } 
@@ -46,6 +47,7 @@
     </select>
 </script>
 <script type="text/template" id="action"><% form.debug("render form template action, item >",item);  %>
+    <button type="button" class="action-button" id="<%= item.id %>"><%= item.label %></button>
 </script>
 <script type="text/template" id="actions"><% form.debug("render form template actions, item >",item);  %>
     <div class="actions-label label" id="<%=item.id%>-label"><%= item.label %></div>

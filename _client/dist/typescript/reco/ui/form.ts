@@ -14,7 +14,7 @@ namespace reco.ui.form {
     // ============================================================================================
     export class FormDefItem<ITEM extends FormDefItem<any>> {
         // ----------------------------------------------------------------------------------------
-        formDef: FormDef;
+        formDef: FormDef<any>;
         id: string;
         labelExp: string = "";
         valueExp?: string;
@@ -23,7 +23,7 @@ namespace reco.ui.form {
         objFieldname: string = "";
         objRelatedFieldnames: string[] = [];
         // ----------------------------------------------------------------------------------------
-        constructor(formDef: FormDef, labelExp: string) {
+        constructor(formDef: FormDef<any>, labelExp: string) {
             this.formDef = formDef;
             this.id = "FormDefItem-" + (++SEQ.val);
             this.labelExp = labelExp;
@@ -59,7 +59,7 @@ namespace reco.ui.form {
         table?: FormDefItemTable;
         tdWidth?: string;
         // ----------------------------------------------------------------------------------------
-        constructor(form: FormDef, labelExp: string, valueExp?: string, table?: FormDefItemTable, tdWidth?: string) {
+        constructor(form: FormDef<any>, labelExp: string, valueExp?: string, table?: FormDefItemTable, tdWidth?: string) {
             super(form, labelExp);
             this.valueExp = valueExp;
             this.table = table;
@@ -77,7 +77,7 @@ namespace reco.ui.form {
         table?: FormDefItemTable;
         tdWidth?: string;
         // ----------------------------------------------------------------------------------------
-        constructor(form: FormDef, labelExp: string, table?: FormDefItemTable, tdWidth?: string) {
+        constructor(form: FormDef<any>, labelExp: string, table?: FormDefItemTable, tdWidth?: string) {
             super(form, labelExp);
             this.table = table;
             this.tdWidth = tdWidth;
@@ -93,7 +93,7 @@ namespace reco.ui.form {
         // ----------------------------------------------------------------------------------------
         treeHandler: TreeHandler<any>;
         // ----------------------------------------------------------------------------------------
-        constructor(form: FormDef, labelExp: string, treeHandler: TreeHandler<any>) {
+        constructor(form: FormDef<any>, labelExp: string, treeHandler: TreeHandler<any>) {
             super(form, labelExp);
             this.treeHandler = treeHandler;
         }
@@ -108,7 +108,7 @@ namespace reco.ui.form {
         optionValueField: string;
         optionLabelField: string;
         // ----------------------------------------------------------------------------------------
-        constructor(form: FormDef, labelExp: string, optionsExp: string, optionIdField: string, optionValueField: string, table?: FormDefItemTable, tdWidth?: string) {
+        constructor(form: FormDef<any>, labelExp: string, optionsExp: string, optionIdField: string, optionValueField: string, table?: FormDefItemTable, tdWidth?: string) {
             super(form, labelExp);
             this.optionsExp = optionsExp;
             this.optionValueField = optionIdField
@@ -129,7 +129,7 @@ namespace reco.ui.form {
         table?: FormDefItemTable;
         tdWidth?: string;
         // ----------------------------------------------------------------------------------------
-        constructor(form: FormDef, labelExp: string, parent?: FormDefItemActions | FormDefItemTable, isTableRow: boolean = true, tdWidth?: string) {
+        constructor(form: FormDef<any>, labelExp: string, parent?: FormDefItemActions | FormDefItemTable, isTableRow: boolean = true, tdWidth?: string) {
             super(form, labelExp);
             this.actionsDef = parent instanceof FormDefItemActions ? parent : undefined;
             this.table = parent instanceof FormDefItemTable ? parent : undefined;
@@ -156,7 +156,7 @@ namespace reco.ui.form {
         actionsDef: FormDefItemAction[];
         asBar: boolean;
         // ----------------------------------------------------------------------------------------
-        constructor(form: FormDef, labelExp: string, asBar: boolean, table?: FormDefItemTable, tableRow: boolean = true, tdWidth?: string) {
+        constructor(form: FormDef<any>, labelExp: string, asBar: boolean, table?: FormDefItemTable, tableRow: boolean = true, tdWidth?: string) {
             super(form, labelExp);
             this.actionsDef = [];
             this.asBar = asBar;
@@ -177,7 +177,7 @@ namespace reco.ui.form {
         tableActions?: FormDefItemActions;
         isResizable: boolean = true;
         // ----------------------------------------------------------------------------------------
-        constructor(form: FormDef, labelExp: string) {
+        constructor(form: FormDef<any>, labelExp: string) {
             super(form, labelExp);
         }
         // ----------------------------------------------------------------------------------------
@@ -188,16 +188,16 @@ namespace reco.ui.form {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    export class FormDef {
+    export class FormDef<P extends PageDef<any, any>> {
         // ----------------------------------------------------------------------------------------
-        pageDef: PageDef<any, any>;
+        pageDef: P;
         htmlEltId: string;
         id: string
         idExp: string = "";
         itemsDefDict: { [key: string]: FormDefItem<any> } = {};
         itemsDef: FormDefItem<any>[] = [];
         // ----------------------------------------------------------------------------------------
-        constructor(pageDef: PageDef<any, any>, htmlEltId: string, id: string | undefined = undefined) {
+        constructor(pageDef: P, htmlEltId: string, id: string | undefined = undefined) {
             this.pageDef = pageDef;
             this.htmlEltId = htmlEltId;
             this.id = id ? id : "FormDef" + (++SEQ.val);
@@ -245,19 +245,35 @@ namespace reco.ui.form {
         get html(): string {
             return "";
         }
+        // ----------------------------------------------------------------------------------------
+        display() {}
+        // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
     export class PageDef<A extends App<any>, T extends Layout> {
         // ----------------------------------------------------------------------------------------
         app: A;
-        formDefDict: { [id: string]: FormDef } = {};
-        formDefs: FormDef[] = [];
+        id: string
+        formDefDict: { [id: string]: FormDef<any> } = {};
+        formDefs: FormDef<any>[] = [];
         layout: T;
         // ----------------------------------------------------------------------------------------
         constructor(app: A, layout: T) {
+            this.id = "PageDef" + (++SEQ.val);
             this.app = app;
             this.layout = layout;
+            this.app.pageDefDict[this.id] = this;
+            this.app.pageDefs.push(this);
         }
+        // ----------------------------------------------------------------------------------------
+        getFormDefByClass<F extends FormDef<any>>(classFormDef: string) : F | undefined {
+            for(let formDef of this.formDefs) {
+                if(formDef.constructor.name == classFormDef) return formDef as F;
+            }
+            return undefined
+        }
+        // ----------------------------------------------------------------------------------------
+        display() {}
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
@@ -285,7 +301,17 @@ namespace reco.ui.form {
                     });
             }
             this.removePage()
+            this.pageDefDict = {};
+            this.pageDefs = [];
+            this.page = undefined;
             return this;
+        }
+        // ----------------------------------------------------------------------------------------
+        getPageDefByClass<P extends PageDef<any, any>>(classPageDef: string) : P | undefined {
+            for(let pageDef of this.pageDefs) {
+                if(pageDef.constructor.name == classPageDef) return pageDef as P;
+            }
+            return undefined
         }
         // ----------------------------------------------------------------------------------------
         removePage() {
@@ -293,7 +319,7 @@ namespace reco.ui.form {
             this.page = undefined;
         }
         // ----------------------------------------------------------------------------------------
-        display(formDef: FormDef, objList?: PObj<PDB>[], obj?: PObj<PDB>): void {
+        display(formDef: FormDef<any>, objList?: PObj<PDB>[], obj?: PObj<PDB>): void {
             if (this.page && this.page.pageDef !== formDef.pageDef) this.page.remove();
             this.page = this.page ? this.page : new Page(formDef.pageDef);
             this.page.display(formDef, objList, obj);
@@ -330,14 +356,14 @@ namespace reco.ui.form {
             }
         }
         // ----------------------------------------------------------------------------------------
-        getForm(formDef: FormDef): Form | undefined {
+        getForm(formDef: FormDef<any>): Form | undefined {
             for (let form of this.forms) {
                 if (form.formDef == formDef) return form;
             }
             return undefined;
         }
         // ----------------------------------------------------------------------------------------
-        newForm(formDef: FormDef): Form {
+        newForm(formDef: FormDef<any>): Form {
             let form = new Form(this, formDef);
             this.formsDict[form.id] = form;
             this.forms.push(form);
@@ -360,7 +386,7 @@ namespace reco.ui.form {
             return this;
         }
         // ----------------------------------------------------------------------------------------
-        display(formDef: FormDef, objList?: PObj<PDB>[], obj?: PObj<PDB>): void {
+        display(formDef: FormDef<any>, objList?: PObj<PDB>[], obj?: PObj<PDB>): void {
             this.pageDef.layout.display();
             let form = this.getForm(formDef);
             form = form ? form : this.newForm(formDef);
@@ -373,13 +399,13 @@ namespace reco.ui.form {
         // ----------------------------------------------------------------------------------------
         page: Page;
         id: string;
-        formDef: FormDef;
+        formDef: FormDef<any>;
         items: { [id: string]: FormItem } = {};
         get db(): PDB { return this.page.app!.db!; }
         objList?: PObj<PDB>[];
         obj?: PObj<PDB>;
         // ----------------------------------------------------------------------------------------
-        constructor(page: Page, formDef: FormDef) {
+        constructor(page: Page, formDef: FormDef<any>) {
             this.id = "Form" + (++SEQ.val);
             this.formDef = formDef;
             this.page = page;

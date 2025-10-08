@@ -9,7 +9,7 @@ namespace reco.ui.tree.test {
         const testDB = new TestDB();
         testDB.dbJsonLoad(testPDBJson);
         reco.ui.layout.RootPanel.addRootFullPanel("root");
-        let layout = new LayoutNcSc("root")
+        let layout = new LayoutNcSc("root",false)
         layout.display();
         new TreeUI(layout.northCenterId, new GeoTreeHandler(testDB)).display();
     }

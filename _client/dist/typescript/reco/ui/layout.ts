@@ -50,18 +50,22 @@ namespace reco.ui.layout {
     // ============================================================================================
     export abstract class Layout {
         // ----------------------------------------------------------------------------------------
+        toolbarEltId?: string;
         parentEltId: string;
         layoutEltId: string;
         gridTemplateColumns: string;
         gridTemplateRows: string
         get parentElt(): HTMLElement { return document.getElementById(this.parentEltId)!; }
         get layoutElt(): HTMLElement { return document.getElementById(this.layoutEltId)!; }
+        get rowCount(): number { return this.gridTemplateRows.split(" ").length; }
+        get colCount(): number { return this.gridTemplateColumns.split(" ").length; }
         // ----------------------------------------------------------------------------------------
-        constructor(idParentElt: string, gridTemplateColumns: string, gridTemplateRows: string) {
+        constructor(idParentElt: string, withToolbar: boolean, gridTemplateColumns: string, gridTemplateRows: string) {
             this.parentEltId = idParentElt;
             this.gridTemplateColumns = gridTemplateColumns;
-            this.gridTemplateRows = gridTemplateRows;
+            this.gridTemplateRows = (withToolbar ? "2em " : "") + gridTemplateRows;
             this.layoutEltId = "layout-" + (++SEQ.val);
+            this.toolbarEltId = withToolbar ? "toolbar-" + (++SEQ.val) : undefined;
 
         }
         // ----------------------------------------------------------------------------------------
@@ -78,7 +82,13 @@ namespace reco.ui.layout {
             this.layoutElt.style.display = "grid";
             this.layoutElt.style.gridTemplateColumns = this.gridTemplateColumns;
             this.layoutElt.style.gridTemplateRows = this.gridTemplateRows;
-
+            if (this.toolbarEltId) {
+                let toolbarDiv: HTMLDivElement = document.createElement("div");
+                toolbarDiv.id = this.toolbarEltId;
+                toolbarDiv.style.gridColumn = "1 / span " + this.colCount;
+                // toolbarDiv.style.backgroundColor = "yellow";
+                this.layoutElt.appendChild(toolbarDiv);
+            }
         }
         // ----------------------------------------------------------------------------------------
         createPanel(id: string, cssClass?: string, gridColumn?: string, gridRow?: string): HTMLElement {
@@ -148,6 +158,27 @@ namespace reco.ui.layout {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
+    export class LayoutSimple extends Layout {
+        // ----------------------------------------------------------------------------------------
+        centerId: string;
+        // ----------------------------------------------------------------------------------------
+        constructor(idParentElt: string, withToolbar: boolean) {
+            super(idParentElt, withToolbar, "1fr", "1fr");
+            this.centerId = "panel-" + (++SEQ.val);
+        }
+        // ----------------------------------------------------------------------------------------
+        onSlideStart(target: EventTarget | null, clientX: number, clientY: number): void { }
+        onSlideMove(target: EventTarget | null, clientX: number, clientY: number): void { }
+        onSlideEnd(): void { }
+        // ----------------------------------------------------------------------------------------
+        display() {
+            if (this.parentElt.children.length > 0) return;
+            super.display();
+            this.createPanel(this.centerId, "panel center");
+        }
+        // ----------------------------------------------------------------------------------------
+    }
+    // ============================================================================================
     export class LayoutNcSc extends Layout {
         // ----------------------------------------------------------------------------------------
         northCenterId: string;
@@ -157,8 +188,8 @@ namespace reco.ui.layout {
         get southCenter(): HTMLElement { return document.getElementById(this.southCenterId)!; }
         get splitHoriz(): Slider { return document.getElementById(this.splitHorizId)! as Slider; }
         // ----------------------------------------------------------------------------------------
-        constructor(idParentElt: string, gridTemplateRows?: string) {
-            super(idParentElt, "1fr", gridTemplateRows ? gridTemplateRows : "1fr 10px 1fr");
+        constructor(idParentElt: string, withToolbar: boolean) {
+            super(idParentElt, withToolbar, "1fr", "1fr 10px 1fr");
             this.northCenterId = "panel-" + (++SEQ.val);
             this.southCenterId = "panel-" + (++SEQ.val);
             this.splitHorizId = "split-" + (++SEQ.val);
@@ -207,8 +238,8 @@ namespace reco.ui.layout {
         get splitHoriz(): Slider { return document.getElementById(this.splitHorizId)! as Slider; }
         get splitVert(): Slider { return document.getElementById(this.splitVertId)! as Slider; }
         // ----------------------------------------------------------------------------------------
-        constructor(idParentElt: string, gridTemplateColumns?: string, gridTemplateRows?: string) {
-            super(idParentElt, gridTemplateColumns ? gridTemplateColumns : "1fr 10px 1fr", gridTemplateRows ? gridTemplateRows : "1fr 10px 1fr");
+        constructor(idParentElt: string, withToolbar: boolean,) {
+            super(idParentElt, withToolbar, "1fr 10px 1fr", "1fr 10px 1fr");
             this.northWestId = "panel-" + (++SEQ.val);
             this.northEastId = "panel-" + (++SEQ.val);
             this.southCenterId = "panel-" + (++SEQ.val);
@@ -269,8 +300,8 @@ namespace reco.ui.layout {
         get splitVert(): Slider { return document.getElementById(this.splitVertId)! as Slider; }
         get splitHoriz(): Slider { return document.getElementById(this.splitHorizId)! as Slider; }
         // ----------------------------------------------------------------------------------------
-        constructor(idParentElt: string, gridTemplateColumns?: string, gridTemplateRows?: string) {
-            super(idParentElt, gridTemplateColumns ? gridTemplateColumns : "1fr 10px 1fr", gridTemplateRows ? gridTemplateRows : "1fr 10px 1fr");
+        constructor(idParentElt: string, withToolbar: boolean) {
+            super(idParentElt, withToolbar, "1fr 10px 1fr", "1fr 10px 1fr");
             this.westCenterId = "panel-" + (++SEQ.val);
             this.eastNorthId = "panel-" + (++SEQ.val);
             this.eastSouthId = "panel-" + (++SEQ.val);
@@ -281,8 +312,8 @@ namespace reco.ui.layout {
         display() {
             if (this.parentElt.children.length > 0) return;
             super.display();
-            this.createPanel(this.westCenterId, "panel westCenter", undefined, "1 / span 3");
-            this.createSplit(this.splitVertId, "VERTICAL", undefined, "1 / span 3");
+            this.createPanel(this.westCenterId, "panel westCenter", undefined, (this.toolbarEltId ? "2" : "1") + " / span 3");
+            this.createSplit(this.splitVertId, "VERTICAL", undefined, (this.toolbarEltId ? "2" : "1") + " / span 3");
             this.createPanel(this.eastNorthId, "panel eastNorth");
             this.createSplit(this.splitHorizId, "HORIZONTAL");
             this.createPanel(this.eastSouthId, "panel eastSouth");

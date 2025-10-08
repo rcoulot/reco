@@ -12,15 +12,15 @@ namespace reco.test {
     let testcase = "LayoutWcEnEs";
     // ============================================================================================
     if (testcase === "NwNeSc") {
-        let layout1 = new LayoutNwNeSc("root")
+        let layout1 = new LayoutNwNeSc("root",false)
         layout1.display();
         // let layout2 = new LayoutNwNeSc(layout1.southCenterId)
         // layout2.display();
     } else if (testcase === "LayoutWcEnEs") {
-        let layout1 = new LayoutWcEnEs("root")
+        let layout1 = new LayoutWcEnEs("root",false)
         layout1.display();
     } else if (testcase === "NcSc") {
-        let layout1 = new LayoutNcSc("root")
+        let layout1 = new LayoutNcSc("root",false)
         layout1.display();
     }
     let panels = document.getElementsByClassName("panel") as HTMLCollectionOf<HTMLDivElement>;
