@@ -91,11 +91,11 @@ namespace reco.ui.form {
     // ============================================================================================
     export class FormDefItemTree extends FormItemSinglePObj<FormDefItemSimple> {
         // ----------------------------------------------------------------------------------------
-        treeHandler: TreeHandler<any>;
+        treeHandlerProvider: ()=> TreeHandler<any>;
         // ----------------------------------------------------------------------------------------
-        constructor(form: FormDef<any>, labelExp: string, treeHandler: TreeHandler<any>) {
+        constructor(form: FormDef<any>, labelExp: string, treeHandlerProvider: ()=> TreeHandler<any>) {
             super(form, labelExp);
-            this.treeHandler = treeHandler;
+            this.treeHandlerProvider = treeHandlerProvider;
         }
         // ----------------------------------------------------------------------------------------
     }
@@ -217,8 +217,8 @@ namespace reco.ui.form {
             return new FormDefItemSimple(this, labelExp, table, tdWidth);
         }
         // ----------------------------------------------------------------------------------------
-        addTreeDef(labelExp: string, treeHandler: TreeHandler<any>): FormDefItemTree {
-            return new FormDefItemTree(this, labelExp, treeHandler);
+        addTreeDef(labelExp: string, treeHandlerProvider: ()=> TreeHandler<any>): FormDefItemTree {
+            return new FormDefItemTree(this, labelExp, treeHandlerProvider);
         }
         // ----------------------------------------------------------------------------------------
         addSelectDef(labelExp: string, optionsExp: string, optionIdField: string, optionValueField: string, table?: FormDefItemTable, tdWidth?: string): FormDefItemSelect {
@@ -241,12 +241,6 @@ namespace reco.ui.form {
             let txt = item.obj ? item.obj.$type + "." + item.obj.$id : "";
             alert("Action event on item  not handled !" + item.id + " / " + item.label + " / " + txt);
         }
-        // ----------------------------------------------------------------------------------------
-        get html(): string {
-            return "";
-        }
-        // ----------------------------------------------------------------------------------------
-        display() {}
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
@@ -273,7 +267,7 @@ namespace reco.ui.form {
             return undefined
         }
         // ----------------------------------------------------------------------------------------
-        display() {}
+        display(){}
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
@@ -428,7 +422,7 @@ namespace reco.ui.form {
             let treeDivs = elt.getElementsByClassName("div-tree")
             for (let treeDiv of treeDivs) {
                 let itemDef = this.items[treeDiv.id].itemDef as FormDefItemTree;
-                new TreeUI(treeDiv.id, itemDef.treeHandler).display();
+                new TreeUI(treeDiv.id, itemDef.treeHandlerProvider()).display();
             }
             let actionButtons = elt.getElementsByClassName("action-button")
             for (let button of actionButtons) {

@@ -22,7 +22,7 @@ namespace reco.design {
         // ----------------------------------------------------------------------------------------
         constructor(pageDef: MainPageDef) {
             super(pageDef, pageDef.layout.westCenterId);
-            this.addTreeDef("'Model Tree'", this.pageDef.app.modelTreeHandler!);
+            this.addTreeDef("'Model Tree'", () => this.pageDef.app.modelTreeHandler!);
         }
         // ----------------------------------------------------------------------------------------
         display() {

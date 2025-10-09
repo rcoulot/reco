@@ -8,18 +8,14 @@ namespace reco.ui.form.test {
     import PageDef = reco.ui.form.PageDef;
     import FormDef = reco.ui.form.FormDef;
     import FormDefItemAction = reco.ui.form.FormDefItemAction;
-    import Form = reco.ui.form.Form;
     import GeoTreeHandler = reco.core.test.data.GeoTreeHandler
     // ============================================================================================
-    export class PersListFormDef extends FormDef<any> {
+    export class TestPersListFormDef extends FormDef<TestMainPageDef> {
         // ----------------------------------------------------------------------------------------
-        persFormDef: PersFormDef;
-        btShowItemDef?: FormDefItemAction;
-        persForm?: Form;
+        btShowItemDef: FormDefItemAction;
         // ----------------------------------------------------------------------------------------
-        constructor(pageDef: PageDef<App<any>, LayoutWcEnEs>, htmlEltId: string, persFormDef: PersFormDef) {
-            super(pageDef, htmlEltId);
-            this.persFormDef = persFormDef;
+        constructor(pageDef: TestMainPageDef) {
+            super(pageDef, pageDef.layout.eastNorthId);
             this.addTitleDef("'title'", "'Form for List of Persons'")
             let tableDef = this.addTableDef("'Persons Table'").addObjListExp("form.Persons")//.notResizable()
             this.addLabelDef("'Identifier'", undefined, tableDef, "false").setObjExp("item.obj", "$id")
@@ -33,23 +29,23 @@ namespace reco.ui.form.test {
         }
         // ----------------------------------------------------------------------------------------
         onActionEvent(item: FormItem, itemDef: FormDefItemAction): void {
-            if (itemDef == this.btShowItemDef) this.showPerson(item, itemDef);
+            if (itemDef == this.btShowItemDef) this.showPerson(item);
         }
         // ----------------------------------------------------------------------------------------
-        showPerson(item: FormItem, itemDef: FormDefItemAction) {
-            item.form.page.display(this.persFormDef, item.form.objList, item.obj!)
+        showPerson(item: FormItem) {
+            item.form.page.display(this.pageDef.testPersFormDef, item.form.objList, item.obj!)
         }
         // ----------------------------------------------------------------------------------------
 
     }
     // ============================================================================================
-    export class PersFormDef extends FormDef<any> {
+    export class TestPersFormDef extends FormDef<TestMainPageDef> {
         // ----------------------------------------------------------------------------------------
-        btNextItemDef?: FormDefItemAction;
-        btPreviousItemDef?: FormDefItemAction;
+        btNextItemDef: FormDefItemAction;
+        btPreviousItemDef: FormDefItemAction;
         // ----------------------------------------------------------------------------------------
-        constructor(pageDef: PageDef<App<any>, LayoutWcEnEs>, htmlEltId: string) {
-            super(pageDef, htmlEltId);
+        constructor(pageDef: TestMainPageDef) {
+            super(pageDef, pageDef.layout.eastSouthId);
             this.addTitleDef("'title'", "'Person'")
             this.addLabelDef("'Identifier'").setObjExp("item.obj", "$id")
             this.addSimpleDef("'Firstname'").setObjExp("item.obj", "firstname")
@@ -85,37 +81,63 @@ namespace reco.ui.form.test {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    export class TreeFormDef extends FormDef<any> {
-        geoTreeHandler: GeoTreeHandler;
+    export class TestTreeFormDef extends FormDef<TestMainPageDef> {
         // ----------------------------------------------------------------------------------------
-        constructor(pageDef: PageDef<App<any>, LayoutWcEnEs>, htmlEltId: string, geoTreeHandler: GeoTreeHandler) {
-            super(pageDef, htmlEltId);
-            this.geoTreeHandler = geoTreeHandler;
-            this.addTreeDef("'Geo Tree'", this.geoTreeHandler);
+        constructor(pageDef: TestMainPageDef) {
+            super(pageDef, pageDef.layout.westCenterId);
+            this.addTreeDef("'Geo Tree'", () => this.pageDef.app.geoTreeHandler!);
         }
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    function runTest() {
-        // reco.ui.layout.RootPanel.addRootVerticalPanel("test-form-root-div", 60);
-        reco.ui.layout.RootPanel.addRootFullPanel("test-form-root-div");
-        reco.ui.form.onstart = () => {
-            const testDB = new TestDB();
-            testDB.dbJsonLoad(testPDBJson);
-            let geoTreeHandler = new GeoTreeHandler(testDB)
-
-            let app = new App(testDB);
-            let pageDef = new PageDef(app, new LayoutWcEnEs("test-form-root-div",false));
-
-            let treeFormDef = new TreeFormDef(pageDef, pageDef.layout.westCenterId, geoTreeHandler)
-            let persFormDef = new PersFormDef(pageDef, pageDef.layout.eastSouthId)
-            let persListFormDef = new PersListFormDef(pageDef, pageDef.layout.eastNorthId, persFormDef)
-
-            app.display(treeFormDef, testDB.Persons, undefined)
-            app.display(persListFormDef, testDB.Persons, undefined)
+    export class TestMainPageDef extends PageDef<TestApp, LayoutWcEnEs> {
+        // ----------------------------------------------------------------------------------------
+        testTreeFormDef: TestTreeFormDef;
+        testPersFormDef: TestPersFormDef;
+        testPersListFormDef: TestPersListFormDef;
+        // ----------------------------------------------------------------------------------------
+        constructor(app: TestApp) {
+            super(app,new LayoutWcEnEs("test-form-root-div", false));
+            this.testTreeFormDef = new TestTreeFormDef(this)
+            this.testPersFormDef = new TestPersFormDef(this)
+            this.testPersListFormDef = new TestPersListFormDef(this)
         }
+        // ----------------------------------------------------------------------------------------
+        display(): void {
+            this.app.display(this.testTreeFormDef, this.app.db!.Persons, undefined)
+            this.app.display(this.testPersListFormDef, this.app.db!.Persons, undefined)
+        }
+        // ----------------------------------------------------------------------------------------
     }
-    runTest()
+    // ============================================================================================
+    export class TestApp extends App<TestDB> {
+        // ----------------------------------------------------------------------------------------
+        geoTreeHandler?: GeoTreeHandler;
+        testMainPageDef: TestMainPageDef;
+        // ----------------------------------------------------------------------------------------
+        constructor() {
+            super();
+            this.testMainPageDef = new TestMainPageDef(this);
+        }
+        // ----------------------------------------------------------------------------------------
+        async loadDb() {
+            const testDB = new TestDB();
+            await testDB.dbJsonLoad(testPDBJson);
+            this.geoTreeHandler = new GeoTreeHandler(testDB)
+            this.initDb(testDB);
+        }
+        // ----------------------------------------------------------------------------------------
+        async startApp() {
+            await this.loadDb();
+            this.testMainPageDef.display();
+        }
+        // ----------------------------------------------------------------------------------------
+    }
+    // ============================================================================================
+    (function () {
+        reco.ui.layout.RootPanel.addRootFullPanel("test-form-root-div");
+        reco.ui.form.onstart = () => { new TestApp().startApp(); }
+    })();
     // ============================================================================================
 }
 // ################################################################################################
