@@ -1,12 +1,12 @@
 // ################################################################################################
 namespace reco.core.test.data {
     // ============================================================================================    
-    import PDB = reco.core.db.PDB;
-    import PObj = reco.core.db.PObj;
-    import PDBJson = reco.core.db.PDBJson;
+    import DB = reco.core.db.DB;
+    import OBJ = reco.core.db.OBJ;
+    import DBJson = reco.core.db.DBJson;
     import TreeHandler = reco.core.db.TreeHandler;
     // ============================================================================================
-    export const testPDBJson: PDBJson = {
+    export const testDBJson: DBJson = {
         "$id": "pdb01",
         "$name": "Tree-Test-Data",
         "$objects": {
@@ -49,9 +49,9 @@ namespace reco.core.test.data {
         "sequence": 1
     }
     // ============================================================================================
-    export class TestDB extends PDB {
+    export class TestDB extends DB {
         // ----------------------------------------------------------------------------------------
-        protected newObj<T extends PObj<PDB>>($type: string, $id: string): T {
+        protected newObj<T extends OBJ<DB>>($type: string, $id: string): T {
             let obj: any = undefined;
             switch ($type) {
                 case "Continent": obj = new Continent(this, $id); break;
@@ -78,7 +78,7 @@ namespace reco.core.test.data {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    export class Continent extends PObj<TestDB> {
+    export class Continent extends OBJ<TestDB> {
         // ----------------------------------------------------------------------------------------
         get name(): string { return this.objJson["name"] }
         set name(val: string) { this.setField("name", val) }
@@ -89,7 +89,7 @@ namespace reco.core.test.data {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    export class Country extends PObj<TestDB> {
+    export class Country extends OBJ<TestDB> {
         // ----------------------------------------------------------------------------------------
         get name(): string { return this.objJson["name"] }
         set name(val: string) { this.setField("name", val) }
@@ -111,7 +111,7 @@ namespace reco.core.test.data {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    export class State extends PObj<TestDB> {
+    export class State extends OBJ<TestDB> {
         // ----------------------------------------------------------------------------------------
         get name(): string { return this.objJson["name"] }
         set name(val: string) { this.setField("name", val) }
@@ -129,7 +129,7 @@ namespace reco.core.test.data {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    export class City extends PObj<TestDB> {
+    export class City extends OBJ<TestDB> {
         // ----------------------------------------------------------------------------------------
         get name(): string { return this.objJson["name"] }
         set name(val: string) { this.setField("name", val) }
@@ -151,7 +151,7 @@ namespace reco.core.test.data {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    export class Person extends PObj<TestDB> {
+    export class Person extends OBJ<TestDB> {
         // ----------------------------------------------------------------------------------------
         get firstname(): string { return this.objJson["firstname"] }
         set firstname(val: string) { this.setField("firstname", val) }
@@ -200,7 +200,7 @@ namespace reco.core.test.data {
         }
         // ----------------------------------------------------------------------------------------
         /** @override */ actions(node: any): string[] {
-            return node instanceof PObj ? ["view", "edit", "delete"] : [];
+            return node instanceof OBJ ? ["view", "edit", "delete"] : [];
         }
         // ----------------------------------------------------------------------------------------
         /** @override */ onLabelClick(node: any) {

@@ -105,6 +105,7 @@ namespace reco.core.files {
         get name(): string | undefined { return this._name }
         get blob(): Blob | undefined { return this._blob }
         get text(): string | undefined { return this._text }
+        get json(): any { return JSON.parse(this._text!) }
         get size(): number { return this._blob!.size }
         set name(val: string) { this._name = val }
         async setBlob(val: Blob) {

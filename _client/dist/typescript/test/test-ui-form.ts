@@ -1,9 +1,13 @@
 // ################################################################################################
 namespace reco.ui.form.test {
     // ============================================================================================
-    import testPDBJson = reco.core.test.data.testPDBJson
     import TestDB = reco.core.test.data.TestDB
+    import Files = reco.core.files.Files;
+    import FileData = reco.core.files.FileData;
+    import MimeTypes = reco.core.files.MimeTypes;
+    import DBJson = reco.core.db.DBJson;
     import LayoutWcEnEs = reco.ui.layout.LayoutWcEnEs;
+    import LayoutSimple = reco.ui.layout.LayoutSimple;
     import App = reco.ui.form.App;
     import PageDef = reco.ui.form.PageDef;
     import FormDef = reco.ui.form.FormDef;
@@ -16,7 +20,7 @@ namespace reco.ui.form.test {
         // ----------------------------------------------------------------------------------------
         constructor(pageDef: TestMainPageDef) {
             super(pageDef, pageDef.layout.eastNorthId);
-            this.addTitleDef("'title'", "'Form for List of Persons'")
+            this.addTitleDef("'Form for List of Persons'")
             let tableDef = this.addTableDef("'Persons Table'").addObjListExp("form.Persons")//.notResizable()
             this.addLabelDef("'Identifier'", undefined, tableDef, "false").setObjExp("item.obj", "$id")
             this.addLabelDef("'Firstname'", undefined, tableDef, "12.5%").setObjExp("item.obj", "firstname")
@@ -25,7 +29,7 @@ namespace reco.ui.form.test {
             this.addLabelDef("'State'", undefined, tableDef, "12.5%").setObjExp("item.obj", "city.state.name", "cityId")
             this.addLabelDef("'Country'", undefined, tableDef, "12.5%").setObjExp("item.obj", "city.country.name", "cityId")
             this.addLabelDef("'Birthdate'", undefined, tableDef, "12.5%").setObjExp("item.obj", "birthdate")
-            this.btShowItemDef = this.addActionDef("btShowPers", "'show'", tableDef, true, 'false')
+            this.btShowItemDef = this.addActionDef("'show'", tableDef, true, 'false')
         }
         // ----------------------------------------------------------------------------------------
         onActionEvent(item: FormItem, itemDef: FormDefItemAction): void {
@@ -46,7 +50,7 @@ namespace reco.ui.form.test {
         // ----------------------------------------------------------------------------------------
         constructor(pageDef: TestMainPageDef) {
             super(pageDef, pageDef.layout.eastSouthId);
-            this.addTitleDef("'title'", "'Person'")
+            this.addTitleDef("'Person'")
             this.addLabelDef("'Identifier'").setObjExp("item.obj", "$id")
             this.addSimpleDef("'Firstname'").setObjExp("item.obj", "firstname")
             this.addSimpleDef("'Lastname'").setObjExp("item.obj", "lastname")
@@ -54,8 +58,8 @@ namespace reco.ui.form.test {
             this.addSimpleDef("'Birth date'").setObjExp("item.obj", "birthdate")
             //let actions = this.addActionsDef("'Actions'", true)
             let actions = this.addActionsDef("", true)
-            this.btPreviousItemDef = this.addActionDef("btPrevious", "'Previous'", actions)
-            this.btNextItemDef = this.addActionDef("btNext", "'Next'", actions)
+            this.btPreviousItemDef = this.addActionDef("'Previous'", actions)
+            this.btNextItemDef = this.addActionDef("'Next'", actions)
         }
         // ----------------------------------------------------------------------------------------
         onActionEvent(item: FormItem, itemDef: FormDefItemAction): void {
@@ -90,46 +94,95 @@ namespace reco.ui.form.test {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
+    export class TestToolbarFormDef extends FormDef<PageDef<TestApp, any>> {
+        // ----------------------------------------------------------------------------------------
+        btOpenDef: FormDefItemAction;
+        btSaveDef: FormDefItemAction;
+        btCloseDef: FormDefItemAction
+        // ----------------------------------------------------------------------------------------
+        constructor(pageDef: PageDef<TestApp, any>) {
+            super(pageDef, pageDef.layout.toolbarEltId);
+            this.btOpenDef = this.addActionDef("'Open'");
+            this.btSaveDef = this.addActionDef("'Save'");
+            this.btCloseDef = this.addActionDef("'Close'");
+        }
+        // ----------------------------------------------------------------------------------------
+        onActionEvent(item: FormItem, itemDef: FormDefItemAction): void {
+            if (itemDef == this.btOpenDef) this.pageDef.app.openDb();
+            else if (itemDef == this.btSaveDef) alert("TestToolbarFormDef.onActionEvent Save TODO");
+            else if (itemDef == this.btCloseDef) this.pageDef.app.closeDb();
+        }
+        // ----------------------------------------------------------------------------------------
+    }
+    // ============================================================================================
     export class TestMainPageDef extends PageDef<TestApp, LayoutWcEnEs> {
         // ----------------------------------------------------------------------------------------
+        testToolbarFormDef: TestToolbarFormDef;
         testTreeFormDef: TestTreeFormDef;
         testPersFormDef: TestPersFormDef;
         testPersListFormDef: TestPersListFormDef;
         // ----------------------------------------------------------------------------------------
         constructor(app: TestApp) {
-            super(app,new LayoutWcEnEs("test-form-root-div", false));
+            super(app, new LayoutWcEnEs("test-form-root-div", true));
+            this.testToolbarFormDef = new TestToolbarFormDef(this)
             this.testTreeFormDef = new TestTreeFormDef(this)
             this.testPersFormDef = new TestPersFormDef(this)
             this.testPersListFormDef = new TestPersListFormDef(this)
         }
         // ----------------------------------------------------------------------------------------
         display(): void {
-            this.app.display(this.testTreeFormDef, this.app.db!.Persons, undefined)
-            this.app.display(this.testPersListFormDef, this.app.db!.Persons, undefined)
+            this.app.display(this.testToolbarFormDef)
+            this.app.display(this.testTreeFormDef, this.app.db!.Persons)
+            this.app.display(this.testPersListFormDef, this.app.db!.Persons)
+        }
+        // ----------------------------------------------------------------------------------------
+    }
+    // ============================================================================================
+    export class TestWelcomePageDef extends PageDef<TestApp, LayoutSimple> {
+        // ----------------------------------------------------------------------------------------
+        testToolbarFormDef: TestToolbarFormDef;
+        // ----------------------------------------------------------------------------------------
+        constructor(app: TestApp) {
+            super(app, new LayoutSimple("test-form-root-div", true));
+            this.testToolbarFormDef = new TestToolbarFormDef(this);
+        }
+        // ----------------------------------------------------------------------------------------
+        display(): void {
+            this.app.display(this.testToolbarFormDef)
         }
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
     export class TestApp extends App<TestDB> {
         // ----------------------------------------------------------------------------------------
+        dbFileData?: FileData;
         geoTreeHandler?: GeoTreeHandler;
         testMainPageDef: TestMainPageDef;
+        testWelcomePageDef: TestWelcomePageDef;
         // ----------------------------------------------------------------------------------------
         constructor() {
             super();
             this.testMainPageDef = new TestMainPageDef(this);
+            this.testWelcomePageDef = new TestWelcomePageDef(this);
         }
         // ----------------------------------------------------------------------------------------
-        async loadDb() {
+        async openDb() {
+            this.dbFileData = await Files.pickFile(MimeTypes.json, ".json");
+            if (!this.dbFileData) { this.closeDb(); return; }
             const testDB = new TestDB();
-            await testDB.dbJsonLoad(testPDBJson);
+            await testDB.dbJsonLoad(this.dbFileData.json);
             this.geoTreeHandler = new GeoTreeHandler(testDB)
             this.initDb(testDB);
+            this.testMainPageDef.display();
+        }
+        // ----------------------------------------------------------------------------------------
+        async closeDb() {
+            this.geoTreeHandler = undefined;
+            this.initDb(undefined);
         }
         // ----------------------------------------------------------------------------------------
         async startApp() {
-            await this.loadDb();
-            this.testMainPageDef.display();
+            this.testWelcomePageDef.display();
         }
         // ----------------------------------------------------------------------------------------
     }

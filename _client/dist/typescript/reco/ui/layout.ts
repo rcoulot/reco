@@ -85,6 +85,7 @@ namespace reco.ui.layout {
             if (this.toolbarEltId) {
                 let toolbarDiv: HTMLDivElement = document.createElement("div");
                 toolbarDiv.id = this.toolbarEltId;
+                toolbarDiv.className = "toolbar";
                 toolbarDiv.style.gridColumn = "1 / span " + this.colCount;
                 // toolbarDiv.style.backgroundColor = "yellow";
                 this.layoutElt.appendChild(toolbarDiv);

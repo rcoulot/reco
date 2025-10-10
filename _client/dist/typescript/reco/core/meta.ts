@@ -1,8 +1,8 @@
 // ################################################################################################
 namespace reco.core.meta {
     // ============================================================================================
-    import PDB = reco.core.db.PDB; 
-    import PObj = reco.core.db.PObj; 
+    import PDB = reco.core.db.DB; 
+    import PObj = reco.core.db.OBJ; 
     import TreeHandler = reco.core.db.TreeHandler;
     // ============================================================================================
     export class MetaModel extends PDB {

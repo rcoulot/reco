@@ -1,23 +1,23 @@
 // ################################################################################################
 namespace reco.ui.tree {
     // ============================================================================================
-    import PDB = reco.core.db.PDB;
-    import PObj = reco.core.db.PObj;
+    import DB = reco.core.db.DB;
+    import OBJ = reco.core.db.OBJ;
     import TreeHandler = reco.core.db.TreeHandler;
     // ============================================================================================
-    export class TreeUI<DB extends PDB> {
+    export class TreeUI<aDB extends DB> {
         // ----------------------------------------------------------------------------------------
-        treeHandler: TreeHandler<DB>;
+        treeHandler: TreeHandler<aDB>;
         eltId: string;
         get elt(): HTMLElement { return document.getElementById(this.eltId) as HTMLElement; }
         // ----------------------------------------------------------------------------------------
-        constructor(eltId: string, nodes: TreeHandler<DB>) {
+        constructor(eltId: string, nodes: TreeHandler<aDB>) {
             this.treeHandler = nodes;
             this.eltId = eltId;
             this.elt.innerHTML = "";
         }
         // ----------------------------------------------------------------------------------------
-        onIconClick(actionNode: PObj<DB>) {
+        onIconClick(actionNode: OBJ<aDB>) {
             this.treeHandler.onIconClick(actionNode);
             let actionNodeNewState = this.treeHandler.isClosed(actionNode) ? "open" : "close";
             let actionNodeElt = document.getElementById(this.treeHandler.id(actionNode))!;

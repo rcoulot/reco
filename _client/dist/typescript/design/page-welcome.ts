@@ -26,7 +26,7 @@ namespace reco.design {
         // ----------------------------------------------------------------------------------------
         constructor(pageDef: WelcomePageDef) {
             super(pageDef, pageDef.layout.toolbarEltId!);
-            this.btOpenModel = this.addActionDef("btOpenModel", "'Open Model'")
+            this.btOpenModel = this.addActionDef("'Open Model'")
         }
         // ----------------------------------------------------------------------------------------
         onActionEvent(item: FormItem, itemDef: FormDefItemAction): void {

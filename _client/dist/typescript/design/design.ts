@@ -1,7 +1,7 @@
 // ################################################################################################
 namespace reco.design {
     // ============================================================================================
-    import PDBJson = reco.core.db.PDBJson;
+    import DBJson = reco.core.db.DBJson;
     import MetaModel = reco.core.meta.MetaModel;
     import ModelTreeHandler = reco.core.meta.ModelTreeHandler;
     import RootPanel = reco.ui.layout.RootPanel;
@@ -23,7 +23,7 @@ namespace reco.design {
         async loadModel(modelUrl: string = "/design/test-model.json"): Promise<void> {
             this.modelUrl = modelUrl;
             this.model = new MetaModel();
-            this.model.dbJsonLoad(await (await fetch(modelUrl)).json() as PDBJson);
+            this.model.dbJsonLoad(await (await fetch(modelUrl)).json() as DBJson);
             this.initDb(this.model);
             this.modelTreeHandler = new ModelTreeHandler(this.model);
             for (let fct of DesignApp.pageDefCreationFcts) fct(this)

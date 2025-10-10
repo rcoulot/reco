@@ -2,9 +2,9 @@
 namespace reco.ui.form {
     // ============================================================================================
     import EJS = reco.core.integration.ejs.EJS
-    import PDB = reco.core.db.PDB
-    import PObj = reco.core.db.PObj
-    import PObjChange = reco.core.db.PObjChange
+    import DB = reco.core.db.DB
+    import OBJ = reco.core.db.OBJ
+    import OBJChange = reco.core.db.OBJChange
     import Layout = reco.ui.layout.Layout;
     import TreeHandler = reco.core.db.TreeHandler;
     import TreeUI = reco.ui.tree.TreeUI;
@@ -44,7 +44,7 @@ namespace reco.ui.form {
             return this as unknown as ITEM
         }
         // ----------------------------------------------------------------------------------------
-        evalValueExp(db: PDB, index: number) {
+        evalValueExp(db: DB, index: number) {
             throw "Error NOT IMPLEMENTED for " + this.constructor.name
         }
         // ----------------------------------------------------------------------------------------
@@ -91,9 +91,9 @@ namespace reco.ui.form {
     // ============================================================================================
     export class FormDefItemTree extends FormItemSinglePObj<FormDefItemSimple> {
         // ----------------------------------------------------------------------------------------
-        treeHandlerProvider: ()=> TreeHandler<any>;
+        treeHandlerProvider: () => TreeHandler<any>;
         // ----------------------------------------------------------------------------------------
-        constructor(form: FormDef<any>, labelExp: string, treeHandlerProvider: ()=> TreeHandler<any>) {
+        constructor(form: FormDef<any>, labelExp: string, treeHandlerProvider: () => TreeHandler<any>) {
             super(form, labelExp);
             this.treeHandlerProvider = treeHandlerProvider;
         }
@@ -205,7 +205,7 @@ namespace reco.ui.form {
             this.pageDef.formDefs.push(this);
         }
         // ----------------------------------------------------------------------------------------
-        addTitleDef(idExp: string, labelExp: string): FormDefItemTitle {
+        addTitleDef(labelExp: string): FormDefItemTitle {
             return new FormDefItemTitle(this, labelExp);
         }
         // ----------------------------------------------------------------------------------------
@@ -217,7 +217,7 @@ namespace reco.ui.form {
             return new FormDefItemSimple(this, labelExp, table, tdWidth);
         }
         // ----------------------------------------------------------------------------------------
-        addTreeDef(labelExp: string, treeHandlerProvider: ()=> TreeHandler<any>): FormDefItemTree {
+        addTreeDef(labelExp: string, treeHandlerProvider: () => TreeHandler<any>): FormDefItemTree {
             return new FormDefItemTree(this, labelExp, treeHandlerProvider);
         }
         // ----------------------------------------------------------------------------------------
@@ -229,7 +229,7 @@ namespace reco.ui.form {
             return new FormDefItemTable(this, labelExp);
         }
         // ----------------------------------------------------------------------------------------
-        addActionDef(name: string, labelExp: string, parent?: FormDefItemActions | FormDefItemTable, isTableRow: boolean = true, tdWidth?: string): FormDefItemAction {
+        addActionDef(labelExp: string, parent?: FormDefItemActions | FormDefItemTable, isTableRow: boolean = true, tdWidth?: string): FormDefItemAction {
             return new FormDefItemAction(this, labelExp, parent, isTableRow, tdWidth);
         }
         // ----------------------------------------------------------------------------------------
@@ -260,18 +260,18 @@ namespace reco.ui.form {
             this.app.pageDefs.push(this);
         }
         // ----------------------------------------------------------------------------------------
-        getFormDefByClass<F extends FormDef<any>>(classFormDef: string) : F | undefined {
-            for(let formDef of this.formDefs) {
-                if(formDef.constructor.name == classFormDef) return formDef as F;
+        getFormDefByClass<F extends FormDef<any>>(classFormDef: string): F | undefined {
+            for (let formDef of this.formDefs) {
+                if (formDef.constructor.name == classFormDef) return formDef as F;
             }
             return undefined
         }
         // ----------------------------------------------------------------------------------------
-        display(){}
+        display() { }
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    export class App<D extends PDB> {
+    export class App<D extends DB> {
         // ----------------------------------------------------------------------------------------
         private _db?: D;
         pageDefDict: { [id: string]: PageDef<any, any> } = {};
@@ -290,7 +290,7 @@ namespace reco.ui.form {
             this._db = db;
             if (this._db) {
                 this._db.changeListeners.push(
-                    (pobj: PObj<any>, change: PObjChange) => {
+                    (pobj: OBJ<any>, change: OBJChange) => {
                         THIS.onDbChange(pobj, change);
                     });
             }
@@ -301,9 +301,9 @@ namespace reco.ui.form {
             return this;
         }
         // ----------------------------------------------------------------------------------------
-        getPageDefByClass<P extends PageDef<any, any>>(classPageDef: string) : P | undefined {
-            for(let pageDef of this.pageDefs) {
-                if(pageDef.constructor.name == classPageDef) return pageDef as P;
+        getPageDefByClass<P extends PageDef<any, any>>(classPageDef: string): P | undefined {
+            for (let pageDef of this.pageDefs) {
+                if (pageDef.constructor.name == classPageDef) return pageDef as P;
             }
             return undefined
         }
@@ -313,13 +313,13 @@ namespace reco.ui.form {
             this.page = undefined;
         }
         // ----------------------------------------------------------------------------------------
-        display(formDef: FormDef<any>, objList?: PObj<PDB>[], obj?: PObj<PDB>): void {
+        display(formDef: FormDef<any>, objList?: OBJ<DB>[], obj?: OBJ<DB>): void {
             if (this.page && this.page.pageDef !== formDef.pageDef) this.page.remove();
             this.page = this.page ? this.page : new Page(formDef.pageDef);
             this.page.display(formDef, objList, obj);
         }
         // ----------------------------------------------------------------------------------------
-        onDbChange(pobj: PObj<any>, change: PObjChange) {
+        onDbChange(pobj: OBJ<any>, change: OBJChange) {
             if (change.objChanged && this.page) {
                 let objElements = document.getElementsByClassName(pobj.$type$id)
                 for (let objElement of objElements) {
@@ -380,7 +380,7 @@ namespace reco.ui.form {
             return this;
         }
         // ----------------------------------------------------------------------------------------
-        display(formDef: FormDef<any>, objList?: PObj<PDB>[], obj?: PObj<PDB>): void {
+        display(formDef: FormDef<any>, objList?: OBJ<DB>[], obj?: OBJ<DB>): void {
             this.pageDef.layout.display();
             let form = this.getForm(formDef);
             form = form ? form : this.newForm(formDef);
@@ -395,9 +395,9 @@ namespace reco.ui.form {
         id: string;
         formDef: FormDef<any>;
         items: { [id: string]: FormItem } = {};
-        get db(): PDB { return this.page.app!.db!; }
-        objList?: PObj<PDB>[];
-        obj?: PObj<PDB>;
+        get db(): DB { return this.page.app!.db!; }
+        objList?: OBJ<DB>[];
+        obj?: OBJ<DB>;
         // ----------------------------------------------------------------------------------------
         constructor(page: Page, formDef: FormDef<any>) {
             this.id = "Form" + (++SEQ.val);
@@ -410,7 +410,7 @@ namespace reco.ui.form {
             elt.innerHTML = "";
         }
         // ----------------------------------------------------------------------------------------
-        display(objList?: PObj<PDB>[], obj?: PObj<PDB>): void {
+        display(objList?: OBJ<DB>[], obj?: OBJ<DB>): void {
             let THIS = this
             this.items = {};
             this.objList = objList;
@@ -419,12 +419,16 @@ namespace reco.ui.form {
             let context = { form: this }
             // console.log("Form.displayForm() context", context)
             elt.innerHTML = EJS.render("@@form/template@@", context);
-            let treeDivs = elt.getElementsByClassName("div-tree")
+            let formDivs = elt.getElementsByClassName("form");
+            for (let formDiv of formDivs as HTMLCollectionOf<HTMLDivElement>) {
+                if (formDiv.parentElement?.classList.contains("toolbar")) formDiv.style.display = "block";
+            }
+            let treeDivs = elt.getElementsByClassName("div-tree");
             for (let treeDiv of treeDivs) {
                 let itemDef = this.items[treeDiv.id].itemDef as FormDefItemTree;
                 new TreeUI(treeDiv.id, itemDef.treeHandlerProvider()).display();
             }
-            let actionButtons = elt.getElementsByClassName("action-button")
+            let actionButtons = elt.getElementsByClassName("action-button");
             for (let button of actionButtons) {
                 button.addEventListener("click", (event) => {
                     let itemButton = THIS.items[button.id] as FormItem
@@ -460,8 +464,8 @@ namespace reco.ui.form {
         form: Form;
         itemDef: FormDefItem<any>;
         parentItem?: FormItem;
-        objList?: PObj<PDB>[] = undefined;
-        obj?: PObj<PDB> = undefined;
+        objList?: OBJ<DB>[] = undefined;
+        obj?: OBJ<DB> = undefined;
         objIndex?: number = undefined;
         get cssClassObjId() { return this.obj ? this.obj.$type$id + " " + this.itemDef.objRelatedFieldnames.join(" ") : ""; }
         // ----------------------------------------------------------------------------------------

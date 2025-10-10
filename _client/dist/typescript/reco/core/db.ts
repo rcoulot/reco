@@ -1,16 +1,16 @@
 // ################################################################################################
 namespace reco.core.db {
     // ============================================================================================
-    export interface PDBJson {
+    export interface DBJson {
         $id: string,
         $name: string,
         $status?: string,
         $statusDate?: number,
-        $objects: { [$id: string]: PObjJson },
+        $objects: { [$id: string]: OBJJson },
         [key: string]: any
     }
     // ============================================================================================
-    export interface PObjJson {
+    export interface OBJJson {
         $id: string,
         $type: string,
         $status?: string,
@@ -18,16 +18,16 @@ namespace reco.core.db {
         [key: string]: any
     }
     // ============================================================================================
-    export interface PObjChange {
+    export interface OBJChange {
         fieldname?: string, 
         objChanged?: boolean,         
         objDeleted?: boolean, 
         objCreated?: boolean
     }
     // ============================================================================================
-    export abstract class PDB {
+    export abstract class DB {
         // ----------------------------------------------------------------------------------------
-        history: PDBJson[] = [{
+        history: DBJson[] = [{
             $id: crypto.randomUUID(),
             $name: "NOMAME",
             $status: "CREATION",
@@ -35,16 +35,16 @@ namespace reco.core.db {
             $objects: {}
         }];
         historyIndex: number = 0;
-        changeListeners: ((pobj: PObj<any>, change: PObjChange) => void)[] = [];
+        changeListeners: ((pobj: OBJ<any>, change: OBJChange) => void)[] = [];
         // ----------------------------------------------------------------------------------------
         genId(): string { return crypto.randomUUID(); }
         // ----------------------------------------------------------------------------------------
         get dbJson() { return this.history[this.historyIndex]; }
-        set dbJson(json: PDBJson) { this.history.push(json); this.historyIndex = this.history.length - 1; }
+        set dbJson(json: DBJson) { this.history.push(json); this.historyIndex = this.history.length - 1; }
         // ----------------------------------------------------------------------------------------
         dbJsonReset() { this.history = []; this.historyIndex = 0; }
         // ----------------------------------------------------------------------------------------
-        dbJsonLoad(json: PDBJson) {
+        dbJsonLoad(json: DBJson) {
             this.dbJsonReset();
             this.dbJson = json;
         }
@@ -59,10 +59,10 @@ namespace reco.core.db {
             this.dbJson.$statusDate = Date.now();
         }
         // ----------------------------------------------------------------------------------------
-        protected abstract newObj<T extends PObj<PDB>>($type: string, $id: string): T;
+        protected abstract newObj<T extends OBJ<DB>>($type: string, $id: string): T;
         // ----------------------------------------------------------------------------------------
-        creatObj<T extends PObj<PDB>>($type: string): T {
-            let objJson: PObjJson = {
+        creatObj<T extends OBJ<DB>>($type: string): T {
+            let objJson: OBJJson = {
                 $id: this.genId(),
                 $type: $type,
                 $status: "CREATION",
@@ -72,7 +72,7 @@ namespace reco.core.db {
             return this.newObj($type, objJson.$id);
         }
         // ----------------------------------------------------------------------------------------
-        getObj<T extends PObj<PDB>>($id: string): T | undefined {
+        getObj<T extends OBJ<DB>>($id: string): T | undefined {
             if (!$id) return undefined;
             let json = this.dbJson.$objects[$id];
             if (json) {
@@ -81,7 +81,7 @@ namespace reco.core.db {
             throw `ERROR PDB getObj not found $id:${$id}`;
         }
         // ----------------------------------------------------------------------------------------
-        find<T extends PObj<PDB>>(finder: any | ((objJson: PObjJson) => boolean)): T[] {
+        find<T extends OBJ<DB>>(finder: any | ((objJson: OBJJson) => boolean)): T[] {
             let result: T[] = [];
             let objects = this.dbJson.$objects
             for (let $id in objects) {
@@ -101,27 +101,27 @@ namespace reco.core.db {
             return result;
         }
         // ----------------------------------------------------------------------------------------
-        indexOf(list: PObj<any>[], obj: PObj<any>): number {
+        indexOf(list: OBJ<any>[], obj: OBJ<any>): number {
             return list.findIndex(x => x.$id === obj.$id);
         }
         // ----------------------------------------------------------------------------------------
-        notifyChange(pobj: PObj<any>, change: PObjChange) {
+        notifyChange(pobj: OBJ<any>, change: OBJChange) {
             for (let changeListener of this.changeListeners) changeListener(pobj, change);
         }
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    export class PObj<DB extends PDB> {
+    export class OBJ<aDB extends DB> {
         // ----------------------------------------------------------------------------------------
-        db: DB;
+        db: aDB;
         $id: string;
         // ----------------------------------------------------------------------------------------
-        constructor(db: DB, $id: string) {
+        constructor(db: aDB, $id: string) {
             this.db = db
             this.$id = $id;
         }
         // ----------------------------------------------------------------------------------------
-        get objJson(): PObjJson { return this.db.dbJson.$objects[this.$id]; }
+        get objJson(): OBJJson { return this.db.dbJson.$objects[this.$id]; }
         // ----------------------------------------------------------------------------------------
         get $type(): string { return this.objJson.$type; }
         get $type$id(): string { return this.$type+"."+this.$id; }
@@ -136,25 +136,25 @@ namespace reco.core.db {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    export abstract class TreeHandler<DB extends PDB> {
+    export abstract class TreeHandler<aDB extends DB> {
         // ----------------------------------------------------------------------------------------
-        db: DB;
+        db: aDB;
         nodesClosedStates: { [nodeId: string]: boolean } = {};
         // ----------------------------------------------------------------------------------------
-        constructor(db: DB) { this.db = db; }
+        constructor(db: aDB) { this.db = db; }
         // ----------------------------------------------------------------------------------------
-        abstract roots(): PObj<DB>[];
-        abstract parent(node: PObj<DB>): PObj<DB>;
-        abstract children(node: PObj<DB>): PObj<DB>[];
-        abstract label(node: PObj<DB>): string;
+        abstract roots(): OBJ<aDB>[];
+        abstract parent(node: OBJ<aDB>): OBJ<aDB>;
+        abstract children(node: OBJ<aDB>): OBJ<aDB>[];
+        abstract label(node: OBJ<aDB>): string;
         // ----------------------------------------------------------------------------------------
-        onIconClick(node: PObj<DB>): void { }
-        onLabelClick(node: PObj<DB>): void { }
-        onActionClick(node: PObj<DB>): void { }
-        isDefaultClosed(node: PObj<DB>): boolean { return false; }
-        actions(node: PObj<DB>): string[] { return []; }
+        onIconClick(node: OBJ<aDB>): void { }
+        onLabelClick(node: OBJ<aDB>): void { }
+        onActionClick(node: OBJ<aDB>): void { }
+        isDefaultClosed(node: OBJ<aDB>): boolean { return false; }
+        actions(node: OBJ<aDB>): string[] { return []; }
         // ----------------------------------------------------------------------------------------
-        list(...roots: PObj<DB>[]): PObj<DB>[] {
+        list(...roots: OBJ<aDB>[]): OBJ<aDB>[] {
             let THIS = this
             let list: any[] = [];
             function traverse(node: any) {
@@ -168,16 +168,16 @@ namespace reco.core.db {
             return list;
         }
         // ----------------------------------------------------------------------------------------
-        id(node: PObj<DB>): string {
+        id(node: OBJ<aDB>): string {
             return node.$id;
         }
         // ----------------------------------------------------------------------------------------
-        nodeById(id: string): PObj<DB> | undefined {
+        nodeById(id: string): OBJ<aDB> | undefined {
             return id == this.db.$id ? undefined : this.db.getObj(id)
         }
         // ----------------------------------------------------------------------------------------
-        path(node: PObj<DB>): PObj<DB>[] {
-            let path: PObj<DB>[] = []
+        path(node: OBJ<aDB>): OBJ<aDB>[] {
+            let path: OBJ<aDB>[] = []
             while (node) {
                 path.splice(0, 0, node)
                 node = this.parent(node);
@@ -185,20 +185,20 @@ namespace reco.core.db {
             return path;
         }
         // ----------------------------------------------------------------------------------------
-        depth(node: PObj<DB>): number {
+        depth(node: OBJ<aDB>): number {
             let path = this.path(node)
             return path.length;
         }
         // ----------------------------------------------------------------------------------------
-        setClosed(node: PObj<DB>, isClosed: boolean): void {
+        setClosed(node: OBJ<aDB>, isClosed: boolean): void {
             this.nodesClosedStates[this.id(node)] = isClosed
         }
         // ----------------------------------------------------------------------------------------
-        isClosed(node: PObj<DB>): boolean {
+        isClosed(node: OBJ<aDB>): boolean {
             return this.nodesClosedStates[this.id(node)] ? true : false
         }
         // ----------------------------------------------------------------------------------------
-        isInClosedPath(node: PObj<DB>): boolean {
+        isInClosedPath(node: OBJ<aDB>): boolean {
             let path = this.path(node);
             path.splice(path.length - 1, 1);
             for (let node of path)
@@ -206,7 +206,7 @@ namespace reco.core.db {
             return false;
         }
         // ----------------------------------------------------------------------------------------
-        css(node: PObj<DB>): string {
+        css(node: OBJ<aDB>): string {
             let type = node.$type;
             if (type[0]) type = type[0].toLowerCase() + (type.length > 1 ? type.substring(1) : '')
             return type;
