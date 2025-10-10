@@ -1,3 +1,4 @@
+// http://localhost:3000/test/test-ui-form.html 
 // ################################################################################################
 namespace reco.ui.form.test {
     // ============================================================================================
@@ -5,12 +6,12 @@ namespace reco.ui.form.test {
     import Files = reco.core.files.Files;
     import FileData = reco.core.files.FileData;
     import MimeTypes = reco.core.files.MimeTypes;
-    import DBJson = reco.core.db.DBJson;
     import LayoutWcEnEs = reco.ui.layout.LayoutWcEnEs;
     import LayoutSimple = reco.ui.layout.LayoutSimple;
     import App = reco.ui.form.App;
     import PageDef = reco.ui.form.PageDef;
     import FormDef = reco.ui.form.FormDef;
+    import FormItem = reco.ui.form.FormItem;
     import FormDefItemAction = reco.ui.form.FormDefItemAction;
     import GeoTreeHandler = reco.core.test.data.GeoTreeHandler
     // ============================================================================================
@@ -179,6 +180,7 @@ namespace reco.ui.form.test {
         async closeDb() {
             this.geoTreeHandler = undefined;
             this.initDb(undefined);
+            this.testWelcomePageDef.display();
         }
         // ----------------------------------------------------------------------------------------
         async startApp() {

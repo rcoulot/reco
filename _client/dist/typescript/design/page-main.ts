@@ -5,20 +5,25 @@ namespace reco.design {
     import PageDef = reco.ui.form.PageDef;
     import FormDef = reco.ui.form.FormDef;
     // ============================================================================================
-    class MainPageDef extends PageDef<DesignApp, LayoutWcEnEs> {
+    export class MainPageDef extends PageDef<DesignApp, LayoutWcEnEs> {
+        // ----------------------------------------------------------------------------------------
+        toolbarFormDef: ToolbarFormDef;        
+        mainPageTreeFormDef: MainPageTreeFormDef;        
         // ----------------------------------------------------------------------------------------
         constructor(app: DesignApp) {
             super(app, new LayoutWcEnEs("root",true));
-            new MainPageTreeFormDef(this);
+            this.toolbarFormDef = new ToolbarFormDef(this);
+            this.mainPageTreeFormDef = new MainPageTreeFormDef(this);
         }
         // ----------------------------------------------------------------------------------------
         display() {
-            this.app.display(this.getFormDefByClass(MainPageTreeFormDef.name)!)
+            this.app.display(this.toolbarFormDef)
+            this.app.display(this.mainPageTreeFormDef)
         }
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    class MainPageTreeFormDef extends FormDef<MainPageDef> {
+    export class MainPageTreeFormDef extends FormDef<MainPageDef> {
         // ----------------------------------------------------------------------------------------
         constructor(pageDef: MainPageDef) {
             super(pageDef, pageDef.layout.westCenterId);

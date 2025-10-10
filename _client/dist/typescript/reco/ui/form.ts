@@ -294,9 +294,7 @@ namespace reco.ui.form {
                         THIS.onDbChange(pobj, change);
                     });
             }
-            this.removePage()
-            this.pageDefDict = {};
-            this.pageDefs = [];
+            this.removePage();
             this.page = undefined;
             return this;
         }
@@ -377,6 +375,7 @@ namespace reco.ui.form {
                 delete this.formsDict[form.id];
             });
             this.forms = [];
+            this.pageDef.layout.remove();
             return this;
         }
         // ----------------------------------------------------------------------------------------

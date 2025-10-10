@@ -66,7 +66,10 @@ namespace reco.ui.layout {
             this.gridTemplateRows = (withToolbar ? "2em " : "") + gridTemplateRows;
             this.layoutEltId = "layout-" + (++SEQ.val);
             this.toolbarEltId = withToolbar ? "toolbar-" + (++SEQ.val) : undefined;
-
+        }
+        // ----------------------------------------------------------------------------------------
+        remove() {
+            this.parentElt.innerHTML = "";
         }
         // ----------------------------------------------------------------------------------------
         display() {
