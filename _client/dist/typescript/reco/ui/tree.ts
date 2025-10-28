@@ -4,15 +4,18 @@ namespace reco.ui.tree {
     import DB = reco.core.db.DB;
     import OBJ = reco.core.db.OBJ;
     import TreeHandler = reco.core.db.TreeHandler;
+    import FormItem = reco.ui.form.FormItem;
     // ============================================================================================
     export class TreeUI<aDB extends DB> {
         // ----------------------------------------------------------------------------------------
         treeHandler: TreeHandler<aDB>;
+        formItem: FormItem;
         eltId: string;
         get elt(): HTMLElement { return document.getElementById(this.eltId) as HTMLElement; }
         // ----------------------------------------------------------------------------------------
-        constructor(eltId: string, nodes: TreeHandler<aDB>) {
+        constructor(eltId: string, nodes: TreeHandler<aDB>, formItem: FormItem) {
             this.treeHandler = nodes;
+            this.formItem = formItem;
             this.eltId = eltId;
             this.elt.innerHTML = "";
         }
@@ -49,8 +52,11 @@ namespace reco.ui.tree {
                 let node = this.treeHandler.nodeById(id);
                 if (node) {
                     if (target.classList.contains('node-ico')) this.onIconClick(node);
-                    else if (target.classList.contains('node-label')) this.treeHandler.onLabelClick?.(node);
-                    else if (target.classList.contains('node-action')) this.treeHandler.onActionClick?.(node);
+                    else if (target.classList.contains('node-label')) {
+                        this.formItem.itemDef.formDef.onActionEvent(this.formItem, this.formItem.itemDef, "onTreeLabelClick", { tree: this, node: node })
+                    } else if (target.classList.contains('node-action')) {
+                        this.formItem.itemDef.formDef.onActionEvent(this.formItem, this.formItem.itemDef, "onTreeActionClick", { tree: this, node: node })
+                    }
                 }
             };
             for (let node of this.treeHandler.list()) {

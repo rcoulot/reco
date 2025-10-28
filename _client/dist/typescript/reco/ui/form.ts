@@ -237,7 +237,7 @@ namespace reco.ui.form {
             return new FormDefItemActions(this, labelExp, asBar);
         }
         // ----------------------------------------------------------------------------------------
-        onActionEvent(item: FormItem, itemDef: FormDefItemAction): void {
+        onActionEvent(item: FormItem, itemDef: FormDefItemAction, eventType: string = "", eventData: any = {}): void {
             let txt = item.obj ? item.obj.$type + "." + item.obj.$id : "";
             alert("Action event on item  not handled !" + item.id + " / " + item.label + " / " + txt);
         }
@@ -311,6 +311,12 @@ namespace reco.ui.form {
             this.page = undefined;
         }
         // ----------------------------------------------------------------------------------------
+        hide(formDef: FormDef<any>, objList?: OBJ<DB>[], obj?: OBJ<DB>): void {
+            if (this.page && this.page.pageDef !== formDef.pageDef) this.page.remove();
+            this.page = this.page ? this.page : new Page(formDef.pageDef);
+            this.page.hide(formDef, objList, obj);
+        }
+        // ----------------------------------------------------------------------------------------
         display(formDef: FormDef<any>, objList?: OBJ<DB>[], obj?: OBJ<DB>): void {
             if (this.page && this.page.pageDef !== formDef.pageDef) this.page.remove();
             this.page = this.page ? this.page : new Page(formDef.pageDef);
@@ -379,6 +385,13 @@ namespace reco.ui.form {
             return this;
         }
         // ----------------------------------------------------------------------------------------
+        hide(formDef: FormDef<any>, objList?: OBJ<DB>[], obj?: OBJ<DB>): void {
+            this.pageDef.layout.display();
+            let form = this.getForm(formDef);
+            form = form ? form : this.newForm(formDef);
+            form.hide(objList, obj);
+        }
+        // ----------------------------------------------------------------------------------------
         display(formDef: FormDef<any>, objList?: OBJ<DB>[], obj?: OBJ<DB>): void {
             this.pageDef.layout.display();
             let form = this.getForm(formDef);
@@ -409,6 +422,11 @@ namespace reco.ui.form {
             elt.innerHTML = "";
         }
         // ----------------------------------------------------------------------------------------
+        hide(objList?: OBJ<DB>[], obj?: OBJ<DB>): void {
+            let elt = document.getElementById(this.formDef.htmlEltId)!;
+            elt.innerHTML = "";
+        }
+        // ----------------------------------------------------------------------------------------
         display(objList?: OBJ<DB>[], obj?: OBJ<DB>): void {
             let THIS = this
             this.items = {};
@@ -424,8 +442,9 @@ namespace reco.ui.form {
             }
             let treeDivs = elt.getElementsByClassName("div-tree");
             for (let treeDiv of treeDivs) {
+                let item = THIS.items[treeDiv.id] as FormItem
                 let itemDef = this.items[treeDiv.id].itemDef as FormDefItemTree;
-                new TreeUI(treeDiv.id, itemDef.treeHandlerProvider()).display();
+                new TreeUI(treeDiv.id, itemDef.treeHandlerProvider(), item).display();
             }
             let actionButtons = elt.getElementsByClassName("action-button");
             for (let button of actionButtons) {

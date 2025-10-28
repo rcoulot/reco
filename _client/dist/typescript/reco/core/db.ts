@@ -149,8 +149,6 @@ namespace reco.core.db {
         abstract label(node: OBJ<aDB>): string;
         // ----------------------------------------------------------------------------------------
         onIconClick(node: OBJ<aDB>): void { }
-        onLabelClick(node: OBJ<aDB>): void { }
-        onActionClick(node: OBJ<aDB>): void { }
         isDefaultClosed(node: OBJ<aDB>): boolean { return false; }
         actions(node: OBJ<aDB>): string[] { return []; }
         // ----------------------------------------------------------------------------------------

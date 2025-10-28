@@ -93,6 +93,13 @@ namespace reco.ui.form.test {
             this.addTreeDef("'Geo Tree'", () => this.pageDef.app.geoTreeHandler!);
         }
         // ----------------------------------------------------------------------------------------
+        onActionEvent(item: FormItem, itemDef: FormDefItemAction, eventType?: string, eventData?: any): void {
+            if (eventType === "onTreeActionClick") {
+                alert(`Action for: ${eventData.node.name}`);
+            } else if (eventType === "onTreeLabelClick") {
+                alert(`Label for: ${eventData.node.name}`);
+            }   
+        }
     }
     // ============================================================================================
     export class TestToolbarFormDef extends FormDef<PageDef<TestApp, any>> {
