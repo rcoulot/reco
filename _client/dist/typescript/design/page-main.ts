@@ -58,62 +58,32 @@ namespace reco.design {
     // ============================================================================================
     class MetaClassFormDef extends FormDef<MainPageDef> {
         // ----------------------------------------------------------------------------------------
+        btCloseDef: FormDefItemAction;
+        // ----------------------------------------------------------------------------------------
         constructor(pageDef: MainPageDef) {
             super(pageDef, pageDef.layout.eastNorthId);
             this.addTitleDef("'Class Details'")
-            this.addSimpleDef("'package name'").setObjExp("item.obj.parentPackage", "name")
-            this.addSimpleDef("'class name'").setObjExp("item.obj", "name")
-
-            // let tableDef = this.addTableDef("'Class fields'").addObjListExp("form.Persons")//.notResizable()
-            // this.addLabelDef("'Identifier'", undefined, tableDef, "false").setObjExp("item.obj", "$id")
-            // this.addLabelDef("'Firstname'", undefined, tableDef, "12.5%").setObjExp("item.obj", "firstname")
-            // this.addLabelDef("'Lastname'", undefined, tableDef, "12.5%").setObjExp("item.obj", "lastname")
-            // this.addLabelDef("'City'", undefined, tableDef, "12.5%").setObjExp("item.obj", "cityName", "cityId")
-            // this.addLabelDef("'State'", undefined, tableDef, "12.5%").setObjExp("item.obj", "city.state.name", "cityId")
-            // this.addLabelDef("'Country'", undefined, tableDef, "12.5%").setObjExp("item.obj", "city.country.name", "cityId")
-            // this.addLabelDef("'Birthdate'", undefined, tableDef, "12.5%").setObjExp("item.obj", "birthdate")
-            // this.btShowItemDef = this.addActionDef("'show'", tableDef, true, 'false')
-
-
-            // this.modelFormDiv = this.page.getElementById("modelFormDiv")!
-            // let form = this.page.getElementById("form.class")!
-            // this.formHtml = form?.innerHTML.replaceAll("@id", "id")
+            this.addSimpleDef("'package'").setObjExp("item.obj.parentPackage", "name")
+            this.addSimpleDef("'class'").setObjExp("item.obj", "name")
+            let fieldsTableDef = this.addTableDef("'fields'").addObjListExp("form.obj.fields")
+            this.addLabelDef("'name'", undefined, fieldsTableDef, "false").setObjExp("item.obj", "name")
+            this.addLabelDef("'type'", undefined, fieldsTableDef, "false").setObjExp("item.obj", "type")
+            this.addLabelDef("'typeInfo'", undefined, fieldsTableDef, "false").setObjExp("item.obj", "typeInfo")
+            let relationsTableDef = this.addTableDef("'relations'").addObjListExp("form.obj.allRelations")
+            this.addLabelDef("'name'", undefined, relationsTableDef, "false").setObjExp("item.obj", "name")
+            this.addLabelDef("'target'", undefined, relationsTableDef, "false").setObjExp("item.obj.target", "name")
+            this.addLabelDef("'multiplicity'", undefined, relationsTableDef, "false").setObjExp("item.obj", "multiplicity")
+            this.addLabelDef("'backref'", undefined, relationsTableDef, "false").setObjExp("item.obj.backref", "name")
+            this.btCloseDef = this.addActionDef("'Close'");
+        }
+        // ----------------------------------------------------------------------------------------
+        onActionEvent(item: FormItem, itemDef: FormDefItemAction): void {
+            if (itemDef == this.btCloseDef) this.pageDef.app.hide(this.pageDef.metaClassFormDef, item.objList, item.obj);
         }
         // ----------------------------------------------------------------------------------------
         display() {
             this.pageDef.app.display(this);
         }
-        // ----------------------------------------------------------------------------------------
-        // populate(clazz: MetaClass) {
-        //     this.page.getInputElementById("form.class.name")!.value = clazz.name ? clazz.name : "";
-        //     // ----
-        //     let fieldsTable = this.page.getTableElementById("form.class.fields")!;
-        //     let fieldsTableBody = fieldsTable.tBodies[0]!;
-        //     let fieldRowHtml = fieldsTableBody.innerHTML;
-        //     fieldsTableBody.innerHTML = "";
-        //     let fieldsTableBodyHtml = ""
-        //     for (let field of clazz.fields) {
-        //         let code = "`" + fieldRowHtml + "`"
-        //         code = code.replaceAll("@equals@", "==")
-        //         try {
-        //             fieldsTableBodyHtml += '\n' + eval("`" + fieldRowHtml + "`").replaceAll('@selected="true"', "selected").replaceAll('@selected="false"', "");
-        //         } catch (e) {
-        //             console.error("Error evaluating field row template", e, code);
-        //             throw e
-        //         }
-        //     }
-        //     fieldsTableBody.innerHTML = fieldsTableBodyHtml;
-        //     // ----
-        //     let relationsTable = this.page.getTableElementById("form.class.relations")!;
-        //     let relationsTableBody = relationsTable.tBodies[0]!;
-        //     let relationRowHtml = relationsTableBody.innerHTML;
-        //     relationsTableBody.innerHTML = "";
-        //     let relationsTableBodyHtml = ""
-        //     for (let relation of clazz.allRelations) {
-        //         relationsTableBodyHtml += '\n' + eval("`" + relationRowHtml + "`")
-        //     }
-        //     relationsTableBody.innerHTML = relationsTableBodyHtml;
-        // }
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
