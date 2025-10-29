@@ -127,7 +127,9 @@ namespace reco.ui.layout {
                     if (ev.touches[0]) this.onSlideStart(ev, ev.touches[0].target, ev.touches[0].clientX, ev.touches[0].clientY);
                 }, { passive: false });
                 elt.onmousemove = (ev) => { THIS.onSlideMove(ev, ev.target, ev.clientX, ev.clientY); }
-                elt.addEventListener("touchmove", (ev) => { if (ev.touches[0]) this.onSlideMove(ev, ev.touches[0].target, ev.touches[0].clientX, ev.touches[0].clientY); });
+                elt.addEventListener("touchmove", (ev) => { 
+                    if (ev.touches[0]) this.onSlideMove(ev, ev.touches[0].target, ev.touches[0].clientX, ev.touches[0].clientY); 
+                }, { passive: false });
                 elt.onmouseup = (ev) => { THIS.onSlideEnd(); }
                 elt.addEventListener("touchend", (ev) => { THIS.onSlideEnd(); });
                 elt.addEventListener("touchcancel", (ev) => { THIS.onSlideEnd(); });
@@ -221,6 +223,7 @@ namespace reco.ui.layout {
         // ----------------------------------------------------------------------------------------
         onSlideMove(ev: Event, target: EventTarget | null, clientX: number, clientY: number) {
             if (this.splitHoriz.slider) {
+                ev.preventDefault();
                 let deltapos = clientY - this.splitHoriz.slider.pos;
                 Layout.setHeight(this.splitHoriz.slider.size1 + deltapos - margin / 2, this.northCenter);
                 Layout.setHeight(this.splitHoriz.slider.size2 - deltapos - margin / 2, this.southCenter);
@@ -269,19 +272,23 @@ namespace reco.ui.layout {
         // ----------------------------------------------------------------------------------------
         onSlideStart(ev: Event, target: EventTarget | null, clientX: number, clientY: number) {
             if (target === this.splitHoriz) {
+                ev.preventDefault();
                 this.splitHoriz.slider = { pos: clientY, size1: this.splitVert.offsetHeight, size2: this.southCenter.offsetHeight };
             } else if (target === this.splitVert) {
+                ev.preventDefault();
                 this.splitVert.slider = { pos: clientX, size1: this.northWest.offsetWidth, size2: this.northEast.offsetWidth };
             }
         }
         // ----------------------------------------------------------------------------------------
         onSlideMove(ev: Event, target: EventTarget | null, clientX: number, clientY: number) {
             if (this.splitHoriz.slider) {
+                ev.preventDefault();
                 let deltapos = clientY - this.splitHoriz.slider.pos;
                 Layout.setHeight(this.splitHoriz.slider.size1 + deltapos - margin / 2, this.northWest, this.splitVert, this.northEast);
                 Layout.setHeight(this.splitHoriz.slider.size2 - deltapos - margin / 2, this.southCenter);
                 Layout.reset("height", this.northWest, this.northEast, this.southCenter);
             } else if (this.splitVert.slider) {
+                ev.preventDefault();
                 let deltapos = clientX - this.splitVert.slider.pos;
                 Layout.setWidth(this.splitVert.slider.size1 + deltapos - margin / 2, this.northWest);
                 Layout.setWidth(this.splitVert.slider.size2 - deltapos - margin / 2, this.northEast);
@@ -331,19 +338,23 @@ namespace reco.ui.layout {
         // ----------------------------------------------------------------------------------------
         onSlideStart(ev: Event, target: EventTarget | null, clientX: number, clientY: number) {
             if (target === this.splitHoriz) {
+                ev.preventDefault();
                 this.splitHoriz.slider = { pos: clientY, size1: this.eastNorth.offsetHeight, size2: this.eathSouth.offsetHeight };
             } else if (target === this.splitVert) {
+                ev.preventDefault();
                 this.splitVert.slider = { pos: clientX, size1: this.westCenter.offsetWidth, size2: this.splitHoriz.offsetWidth };
             }
         }
         // ----------------------------------------------------------------------------------------
         onSlideMove(ev: Event, target: EventTarget | null, clientX: number, clientY: number) {
             if (this.splitHoriz.slider) {
+                ev.preventDefault();
                 let deltapos = clientY - this.splitHoriz.slider.pos;
                 Layout.setHeight(this.splitHoriz.slider.size1 + deltapos - margin / 2, this.eastNorth);
                 Layout.setHeight(this.splitHoriz.slider.size2 - deltapos - margin / 2, this.eathSouth);
                 Layout.reset("width", this.eastNorth, this.eathSouth);
             } else if (this.splitVert.slider) {
+                ev.preventDefault();
                 let deltapos = clientX - this.splitVert.slider.pos;
                 Layout.setWidth(this.splitVert.slider.size1 + deltapos - margin / 2, this.westCenter);
                 Layout.setWidth(this.splitVert.slider.size2 - deltapos - margin / 2, this.eastNorth, this.splitHoriz, this.eathSouth);
@@ -358,7 +369,7 @@ namespace reco.ui.layout {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    window.addEventListener("resize", () => { Layout.reset("both"); });
+    // window.addEventListener("resize", () => { Layout.reset("both"); });
     // ============================================================================================
 }
 // ################################################################################################
