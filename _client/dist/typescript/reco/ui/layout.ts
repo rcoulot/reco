@@ -15,10 +15,10 @@ namespace reco.ui.layout {
             rootPanel.style.position = `absolute`;
             rootPanel.style.top = `${margin}px`;
             rootPanel.style.left = `${margin}px`;
-            // rootPanel.style.bottom = `${margin}px`;
-            // rootPanel.style.right = `${margin}px`;
-            rootPanel.style.width = `calc(100vw - ${2 * margin}px)`;
-            rootPanel.style.height = `calc(100vh - ${2 * margin}px)`;
+            rootPanel.style.bottom = `${margin}px`;
+            rootPanel.style.right = `${margin}px`;
+            // rootPanel.style.width = `calc(100vw - ${2 * margin}px)`;
+            // rootPanel.style.height = `calc(100vh - ${2 * margin}px)`;
             rootPanel.style.overflow = "hidden";
             // rootPanel.style.backgroundColor = `yellow`;
             document.body.append(rootPanel)
