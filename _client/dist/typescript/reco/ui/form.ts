@@ -57,13 +57,11 @@ namespace reco.ui.form {
     export class FormDefItemLabel extends FormDefItem<FormDefItemLabel> {
         // ----------------------------------------------------------------------------------------
         table?: FormDefItemTable;
-        tdWidth?: string;
         // ----------------------------------------------------------------------------------------
-        constructor(form: FormDef<any>, labelExp: string, valueExp?: string, table?: FormDefItemTable, tdWidth?: string) {
+        constructor(form: FormDef<any>, labelExp: string, valueExp?: string, table?: FormDefItemTable) {
             super(form, labelExp);
             this.valueExp = valueExp;
             this.table = table;
-            this.tdWidth = tdWidth;
             if (this.table) {
                 this.formDef.itemsDef.splice(this.formDef.itemsDef.length - 1, 1)
                 this.table.colsDef.push(this);
@@ -75,12 +73,10 @@ namespace reco.ui.form {
     export class FormDefItemSimple extends FormItemSinglePObj<FormDefItemSimple> {
         // ----------------------------------------------------------------------------------------
         table?: FormDefItemTable;
-        tdWidth?: string;
         // ----------------------------------------------------------------------------------------
-        constructor(form: FormDef<any>, labelExp: string, table?: FormDefItemTable, tdWidth?: string) {
+        constructor(form: FormDef<any>, labelExp: string, table?: FormDefItemTable) {
             super(form, labelExp);
             this.table = table;
-            this.tdWidth = tdWidth;
             if (this.table) {
                 this.formDef.itemsDef.splice(this.formDef.itemsDef.length - 1, 1)
                 this.table.colsDef.push(this);
@@ -103,18 +99,16 @@ namespace reco.ui.form {
     export class FormDefItemSelect extends FormItemSinglePObj<FormDefItemSelect> {
         // ----------------------------------------------------------------------------------------
         table?: FormDefItemTable;
-        tdWidth?: string;
         optionsExp: string;
         optionValueField: string;
         optionLabelField: string;
         // ----------------------------------------------------------------------------------------
-        constructor(form: FormDef<any>, labelExp: string, optionsExp: string, optionIdField: string, optionValueField: string, table?: FormDefItemTable, tdWidth?: string) {
+        constructor(form: FormDef<any>, labelExp: string, optionsExp: string, optionIdField: string, optionValueField: string, table?: FormDefItemTable) {
             super(form, labelExp);
             this.optionsExp = optionsExp;
             this.optionValueField = optionIdField
             this.optionLabelField = optionValueField
             this.table = table;
-            this.tdWidth = tdWidth;
             if (this.table) {
                 this.formDef.itemsDef.splice(this.formDef.itemsDef.length - 1, 1)
                 this.table.colsDef.push(this);
@@ -127,13 +121,11 @@ namespace reco.ui.form {
         // ----------------------------------------------------------------------------------------
         actionsDef?: FormDefItemActions;
         table?: FormDefItemTable;
-        tdWidth?: string;
         // ----------------------------------------------------------------------------------------
-        constructor(form: FormDef<any>, labelExp: string, parent?: FormDefItemActions | FormDefItemTable, isTableRow: boolean = true, tdWidth?: string) {
+        constructor(form: FormDef<any>, labelExp: string, parent?: FormDefItemActions | FormDefItemTable, isTableRow: boolean = true) {
             super(form, labelExp);
             this.actionsDef = parent instanceof FormDefItemActions ? parent : undefined;
             this.table = parent instanceof FormDefItemTable ? parent : undefined;
-            this.tdWidth = tdWidth;
             if (this.actionsDef) {
                 this.formDef.itemsDef.splice(this.formDef.itemsDef.length - 1, 1)
                 this.actionsDef.actionsDef.push(this);
@@ -152,16 +144,14 @@ namespace reco.ui.form {
     export class FormDefItemActions extends FormDefItem<FormDefItemActions> {
         // ----------------------------------------------------------------------------------------
         table?: FormDefItemTable;
-        tdWidth?: string;
         actionsDef: FormDefItemAction[];
         asBar: boolean;
         // ----------------------------------------------------------------------------------------
-        constructor(form: FormDef<any>, labelExp: string, asBar: boolean, table?: FormDefItemTable, tableRow: boolean = true, tdWidth?: string) {
+        constructor(form: FormDef<any>, labelExp: string, asBar: boolean, table?: FormDefItemTable, tableRow: boolean = true) {
             super(form, labelExp);
             this.actionsDef = [];
             this.asBar = asBar;
             this.table = table;
-            this.tdWidth = tdWidth;
             if (this.table) {
                 this.formDef.itemsDef.splice(this.formDef.itemsDef.length - 1, 1)
                 if (tableRow) this.table.colsDef.push(this);
@@ -209,28 +199,28 @@ namespace reco.ui.form {
             return new FormDefItemTitle(this, labelExp);
         }
         // ----------------------------------------------------------------------------------------
-        addLabelDef(labelExp: string, valueExp?: string, table?: FormDefItemTable, tdWidth?: string): FormDefItemLabel {
-            return new FormDefItemLabel(this, labelExp, valueExp, table, tdWidth);
+        addLabelDef(labelExp: string, valueExp?: string, table?: FormDefItemTable): FormDefItemLabel {
+            return new FormDefItemLabel(this, labelExp, valueExp, table);
         }
         // ----------------------------------------------------------------------------------------
-        addSimpleDef(labelExp: string, table?: FormDefItemTable, tdWidth?: string): FormDefItemSimple {
-            return new FormDefItemSimple(this, labelExp, table, tdWidth);
+        addSimpleDef(labelExp: string, table?: FormDefItemTable): FormDefItemSimple {
+            return new FormDefItemSimple(this, labelExp, table);
         }
         // ----------------------------------------------------------------------------------------
         addTreeDef(labelExp: string, treeHandlerProvider: () => TreeHandler<any>): FormDefItemTree {
             return new FormDefItemTree(this, labelExp, treeHandlerProvider);
         }
         // ----------------------------------------------------------------------------------------
-        addSelectDef(labelExp: string, optionsExp: string, optionIdField: string, optionValueField: string, table?: FormDefItemTable, tdWidth?: string): FormDefItemSelect {
-            return new FormDefItemSelect(this, labelExp, optionsExp, optionIdField, optionValueField, table, tdWidth);
+        addSelectDef(labelExp: string, optionsExp: string, optionIdField: string, optionValueField: string, table?: FormDefItemTable): FormDefItemSelect {
+            return new FormDefItemSelect(this, labelExp, optionsExp, optionIdField, optionValueField, table);
         }
         // ----------------------------------------------------------------------------------------
         addTableDef(labelExp: string): FormDefItemTable {
             return new FormDefItemTable(this, labelExp);
         }
         // ----------------------------------------------------------------------------------------
-        addActionDef(labelExp: string, parent?: FormDefItemActions | FormDefItemTable, isTableRow: boolean = true, tdWidth?: string): FormDefItemAction {
-            return new FormDefItemAction(this, labelExp, parent, isTableRow, tdWidth);
+        addActionDef(labelExp: string, parent?: FormDefItemActions | FormDefItemTable, isTableRow: boolean = true): FormDefItemAction {
+            return new FormDefItemAction(this, labelExp, parent, isTableRow);
         }
         // ----------------------------------------------------------------------------------------
         addActionsDef(labelExp: string, asBar: boolean): FormDefItemActions {

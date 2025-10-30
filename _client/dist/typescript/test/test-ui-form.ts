@@ -22,15 +22,15 @@ namespace reco.ui.form.test {
         constructor(pageDef: TestMainPageDef) {
             super(pageDef, pageDef.layout.eastNorthId);
             this.addTitleDef("'Form for List of Persons'")
-            let tableDef = this.addTableDef("'Persons Table'").addObjListExp("form.Persons")//.notResizable()
-            this.addLabelDef("'Identifier'", undefined, tableDef, "false").setObjExp("item.obj", "$id")
-            this.addLabelDef("'Firstname'", undefined, tableDef, "12.5%").setObjExp("item.obj", "firstname")
-            this.addLabelDef("'Lastname'", undefined, tableDef, "12.5%").setObjExp("item.obj", "lastname")
-            this.addLabelDef("'City'", undefined, tableDef, "12.5%").setObjExp("item.obj", "cityName", "cityId")
-            this.addLabelDef("'State'", undefined, tableDef, "12.5%").setObjExp("item.obj", "city.state.name", "cityId")
-            this.addLabelDef("'Country'", undefined, tableDef, "12.5%").setObjExp("item.obj", "city.country.name", "cityId")
-            this.addLabelDef("'Birthdate'", undefined, tableDef, "12.5%").setObjExp("item.obj", "birthdate")
-            this.btShowItemDef = this.addActionDef("'show'", tableDef, true, 'false')
+            let tableDef = this.addTableDef("'Persons Table'").addObjListExp("form.Persons").notResizable()
+            this.addLabelDef("'Identifier'", undefined, tableDef).setObjExp("item.obj", "$id")
+            this.addLabelDef("'Firstname'", undefined, tableDef).setObjExp("item.obj", "firstname")
+            this.addLabelDef("'Lastname'", undefined, tableDef).setObjExp("item.obj", "lastname")
+            this.addLabelDef("'City'", undefined, tableDef).setObjExp("item.obj", "cityName", "cityId")
+            this.addLabelDef("'State'", undefined, tableDef).setObjExp("item.obj", "city.state.name", "cityId")
+            this.addLabelDef("'Country'", undefined, tableDef).setObjExp("item.obj", "city.country.name", "cityId")
+            this.addLabelDef("'Birthdate'", undefined, tableDef).setObjExp("item.obj", "birthdate")
+            this.btShowItemDef = this.addActionDef("'show'", tableDef, true)
         }
         // ----------------------------------------------------------------------------------------
         onActionEvent(item: FormItem, itemDef: FormDefItemAction): void {

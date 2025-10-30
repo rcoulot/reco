@@ -62,12 +62,11 @@
 <script type="text/template" id="table"><% form.debug("render form template table, item >",item);  %>
     <div class="table-label label" style="grid-column: 1 / span 2"><%= item.label %></div>
     <div class="div-table" style="grid-column: 1 / span 2">
-    <table style="table-layout: fixed;" class="table-table resizable<%= item.itemDef.isResizable ? '' : ' not-resizable' %>" reco-width="RECOPAGEWIDTH - 20">
+    <table style="table-layout: fixed;" class="table-table <%= item.itemDef.isResizable ? 'resizable' : 'not-resizable' %>">
         <thead>
             <% let parent = item;
                 form.debug("render form template table header, parent >",parent);
                 for(let colDef of parent.itemDef.colsDef) { 
-                    colDef.tdWidth = colDef.tdWidth ? colDef.tdWidth : (100/parent.itemDef.colsDef.length)+"%";
                     form.debug("render form template table header, colDef >",colDef);
                     let item = form.newItem(colDef, parent);
                     form.debug("render form template table header, col item >",item);
@@ -88,15 +87,12 @@
                                              colDef instanceof reco.ui.form.FormDefItemActions;
                         if (isColDefAction) { %> 
                             <td style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;"
-                                class="resizable <%=colDef.tdWidth !== 'false' && parent.itemDef.isResizable ? '' : 'not-resizable' %>" 
-                                reco-width="RECOPARENTWIDTH * <%=colDef.tdWidth%>" id="<%=item.id%>-value%>">
+                                id="<%=item.id%>-value%>">
                                 <button type="button" class="action-button" id="<%= item.id %>" title="<%= item.label %>">
                                 <%= item.label %></button>
                             </td> <%  
                         } else { %>
                             <td style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;"
-                                class="<%=item.cssClassObjId%> resizable <%=colDef.tdWidth !== 'false' && parent.itemDef.isResizable ? '' : 'not-resizable' %>" 
-                                reco-width="RECOPARENTWIDTH * <%=colDef.tdWidth%>" 
                                 id="<%=item.id%>-value%>" 
                                 title="<%= item.value %>"= ><%= item.value %></td>
                     <%  }

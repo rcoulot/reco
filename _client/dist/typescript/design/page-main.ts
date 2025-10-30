@@ -61,19 +61,19 @@ namespace reco.design {
         btCloseDef: FormDefItemAction;
         // ----------------------------------------------------------------------------------------
         constructor(pageDef: MainPageDef) {
-            super(pageDef, pageDef.layout.eastNorthId);
+            super(pageDef, pageDef.layout.eastSouthId);
             this.addTitleDef("'Class Details'")
             this.addSimpleDef("'package'").setObjExp("item.obj.parentPackage", "name")
             this.addSimpleDef("'class'").setObjExp("item.obj", "name")
-            let fieldsTableDef = this.addTableDef("'fields'").addObjListExp("form.obj.fields")
-            this.addLabelDef("'name'", undefined, fieldsTableDef, "false").setObjExp("item.obj", "name")
-            this.addLabelDef("'type'", undefined, fieldsTableDef, "false").setObjExp("item.obj", "type")
-            this.addLabelDef("'typeInfo'", undefined, fieldsTableDef, "false").setObjExp("item.obj", "typeInfo")
-            let relationsTableDef = this.addTableDef("'relations'").addObjListExp("form.obj.allRelations")
-            this.addLabelDef("'name'", undefined, relationsTableDef, "false").setObjExp("item.obj", "name")
-            this.addLabelDef("'target'", undefined, relationsTableDef, "false").setObjExp("item.obj.target", "name")
-            this.addLabelDef("'multiplicity'", undefined, relationsTableDef, "false").setObjExp("item.obj", "multiplicity")
-            this.addLabelDef("'backref'", undefined, relationsTableDef, "false").setObjExp("item.obj.backref", "name")
+            let fieldsTableDef = this.addTableDef("'fields'").addObjListExp("form.obj.fields").notResizable()
+            this.addLabelDef("'name'", undefined, fieldsTableDef).setObjExp("item.obj", "name")
+            this.addLabelDef("'type'", undefined, fieldsTableDef).setObjExp("item.obj", "type")
+            this.addLabelDef("'typeInfo'", undefined, fieldsTableDef).setObjExp("item.obj", "typeInfo")
+            let relationsTableDef = this.addTableDef("'relations'").addObjListExp("form.obj.allRelations").notResizable()
+            this.addLabelDef("'name'", undefined, relationsTableDef).setObjExp("item.obj", "name")
+            this.addLabelDef("'target'", undefined, relationsTableDef).setObjExp("item.obj.target", "name")
+            this.addLabelDef("'multiplicity'", undefined, relationsTableDef).setObjExp("item.obj", "multiplicity")
+            this.addLabelDef("'backref'", undefined, relationsTableDef).setObjExp("item.obj.backref", "name")
             this.btCloseDef = this.addActionDef("'Close'");
         }
         // ----------------------------------------------------------------------------------------
