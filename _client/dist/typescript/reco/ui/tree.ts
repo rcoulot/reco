@@ -41,7 +41,8 @@ namespace reco.ui.tree {
             }
         }
         // ----------------------------------------------------------------------------------------
-        display() {
+        display(refresh: boolean = false) : TreeUI<aDB> {
+            console.log("TreeUI.display "+refresh)
             let html = ""
             this.elt.onclick = (e: MouseEvent) => {
                 let target = e.target as HTMLElement;
@@ -75,6 +76,7 @@ namespace reco.ui.tree {
                 html += `</div>\n`;
                 this.elt.innerHTML = html;
             }
+            return this;
         }
         // ----------------------------------------------------------------------------------------
     }

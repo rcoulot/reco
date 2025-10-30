@@ -325,6 +325,12 @@ namespace reco.ui.form {
                         }
                     }
                 }
+                for(let form of this.page.forms) {
+                    for(let itemId in form.items) {
+                        let item = form.items[itemId];
+                        if (item.treeUI) item.refresh();
+                    }
+                }
             }
         }
         // ----------------------------------------------------------------------------------------
@@ -434,7 +440,7 @@ namespace reco.ui.form {
             for (let treeDiv of treeDivs) {
                 let item = THIS.items[treeDiv.id] as FormItem
                 let itemDef = this.items[treeDiv.id].itemDef as FormDefItemTree;
-                new TreeUI(treeDiv.id, itemDef.treeHandlerProvider(), item).display();
+                item.treeUI = new TreeUI(treeDiv.id, itemDef.treeHandlerProvider(), item).display();
             }
             let actionButtons = elt.getElementsByClassName("action-button");
             for (let button of actionButtons) {
@@ -470,6 +476,7 @@ namespace reco.ui.form {
         // ----------------------------------------------------------------------------------------
         id: string;
         form: Form;
+        treeUI? : TreeUI<any>;
         itemDef: FormDefItem<any>;
         parentItem?: FormItem;
         objList?: OBJ<DB>[] = undefined;
@@ -525,6 +532,8 @@ namespace reco.ui.form {
             } else if (this.itemDef instanceof FormDefItemLabel) {
                 let label = document.getElementById(this.id + "-value")!
                 label.innerText = this.value;
+            } else if (this.itemDef instanceof FormDefItemTree && this.treeUI) {
+                this.treeUI.display(true);
             }
         }
         // ----------------------------------------------------------------------------------------
