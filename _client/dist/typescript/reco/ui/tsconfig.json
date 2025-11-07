@@ -15,6 +15,7 @@
   "files": [
     "layout.ts",
     "tree.ts",
-    "form.ts"
+    "form.ts",
+    "form-generator.ts"
   ]
 }

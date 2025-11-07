@@ -1,7 +1,6 @@
 // ################################################################################################
 namespace reco.ui.form {
     // ============================================================================================
-    import EJS = reco.core.integration.ejs.EJS
     import DB = reco.core.db.DB
     import OBJ = reco.core.db.OBJ
     import OBJChange = reco.core.db.OBJChange
@@ -325,8 +324,8 @@ namespace reco.ui.form {
                         }
                     }
                 }
-                for(let form of this.page.forms) {
-                    for(let itemId in form.items) {
+                for (let form of this.page.forms) {
+                    for (let itemId in form.items) {
                         let item = form.items[itemId];
                         if (item.treeUI) item.refresh();
                     }
@@ -429,9 +428,7 @@ namespace reco.ui.form {
             this.objList = objList;
             this.obj = obj;
             let elt = document.getElementById(this.formDef.htmlEltId)!;
-            let context = { form: this }
-            // console.log("Form.displayForm() context", context)
-            elt.innerHTML = EJS.render("@@form/template@@", context);
+            elt.innerHTML = new FormGenerator(this).generate();
             let formDivs = elt.getElementsByClassName("form");
             for (let formDiv of formDivs as HTMLCollectionOf<HTMLDivElement>) {
                 if (formDiv.parentElement?.classList.contains("toolbar")) formDiv.style.display = "block";
@@ -476,7 +473,7 @@ namespace reco.ui.form {
         // ----------------------------------------------------------------------------------------
         id: string;
         form: Form;
-        treeUI? : TreeUI<any>;
+        treeUI?: TreeUI<any>;
         itemDef: FormDefItem<any>;
         parentItem?: FormItem;
         objList?: OBJ<DB>[] = undefined;
@@ -539,13 +536,11 @@ namespace reco.ui.form {
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
-    (async () => {
-        const parser = new DOMParser()
-        let html = await (await fetch("/reco/ui/form.html")).text()
-        let doc = parser.parseFromString(html, "text/html")
-        EJS.templatesDocuments["form"] = doc
+    var starForm = async () => {
         if (reco.ui.form.onstart) reco.ui.form.onstart()
-    })()
+        else setTimeout(starForm, 100);
+    }
+    starForm();
     // ============================================================================================
 }
 // ################################################################################################
