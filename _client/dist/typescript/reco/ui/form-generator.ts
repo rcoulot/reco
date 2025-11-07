@@ -185,11 +185,11 @@ namespace reco.ui.form {
                     this.form.debug("render form template table row, colDef, obj >", colDef, item.obj);
                     let isColDefAction = colDef instanceof reco.ui.form.FormDefItemAction || colDef instanceof reco.ui.form.FormDefItemActions;
                     let itemEltTableBodyRowCell = document.createElement("td");
+                    if (isColDefAction) {
+                        itemEltTableBodyRowCell.id = `${item.id}-value`;
                         itemEltTableBodyRowCell.style.overflow = "hidden";
                         itemEltTableBodyRowCell.style.whiteSpace = "nowrap";
                         itemEltTableBodyRowCell.style.textOverflow = "ellipsis";
-                    if (isColDefAction) {
-                        itemEltTableBodyRowCell.id = `${item.id}-value`;
                         let itemEltTableBodyRowCellButton = document.createElement("button");
                         itemEltTableBodyRowCellButton.type = "button";
                         itemEltTableBodyRowCellButton.className = `action-button`;
