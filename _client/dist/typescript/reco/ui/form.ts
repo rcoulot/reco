@@ -428,7 +428,7 @@ namespace reco.ui.form {
             this.objList = objList;
             this.obj = obj;
             let elt = document.getElementById(this.formDef.htmlEltId)!;
-            elt.innerHTML = new FormGenerator(this).generate();
+            new FormGenerator(this,elt).generate();
             let formDivs = elt.getElementsByClassName("form");
             for (let formDiv of formDivs as HTMLCollectionOf<HTMLDivElement>) {
                 if (formDiv.parentElement?.classList.contains("toolbar")) formDiv.style.display = "block";

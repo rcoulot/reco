@@ -4,107 +4,165 @@ namespace reco.ui.form {
     export class FormGenerator {
         // ----------------------------------------------------------------------------------------
         form: Form;
+        elt: HTMLElement;
+        divForm: HTMLDivElement;
         // ----------------------------------------------------------------------------------------
-        constructor(form: Form) {
+        constructor(form: Form, elt: HTMLElement) {
             this.form = form;
+            this.elt = elt;
+            this.divForm = document.createElement("div");
+            this.divForm.className = "form";
+            this.divForm.style.display = "grid";
+            this.divForm.style.gridTemplateColumns = "max-content auto";
+            this.divForm.style.maxWidth = "100%";
         }
         // ----------------------------------------------------------------------------------------
-        generate(): string {
+        generate(): HTMLDivElement {
             this.form.debug("FormGenerator.generate");
-            let html = ""
-            html += `<div class="form" style="display: grid;grid-template-columns: max-content auto;max-width: 100%;" id="${this.form.id}">\n`;
+            this.divForm.id = this.form.id;
             this.form.items = {};
             for (let itemDef of this.form.formDef.itemsDef) {
                 let item = this.form.newItem(itemDef);
                 item.obj = item.obj ? item.obj : this.form.obj;
                 item.objList = item.objList ? item.objList : this.form.objList;
                 this.form.debug("render form item", item)
-                if (itemDef instanceof reco.ui.form.FormDefItemTitle) { html += this.generateTitle(itemDef, item) + "\n"; }
-                else if (itemDef instanceof reco.ui.form.FormDefItemLabel) { html += this.generateLabel(itemDef, item) + "\n"; }
-                else if (itemDef instanceof reco.ui.form.FormDefItemSimple) { html += this.generateSimple(itemDef, item) + "\n"; }
-                else if (itemDef instanceof reco.ui.form.FormDefItemTree) { html += this.generateTree(itemDef, item) + "\n"; }
-                else if (itemDef instanceof reco.ui.form.FormDefItemSelect) { html += this.generateSelect(itemDef, item) + "\n"; }
-                else if (itemDef instanceof reco.ui.form.FormDefItemAction) { html += this.generateAction(itemDef, item) + "\n"; }
-                else if (itemDef instanceof reco.ui.form.FormDefItemActions) { html += this.generateActions(itemDef, item) + "\n"; }
-                else if (itemDef instanceof reco.ui.form.FormDefItemTable) { html += this.generateTable(itemDef, item) + "\n"; }
+                if (itemDef instanceof reco.ui.form.FormDefItemTitle) { this.generateTitle(this.divForm, itemDef, item); }
+                else if (itemDef instanceof reco.ui.form.FormDefItemLabel) { this.generateLabel(this.divForm, itemDef, item); }
+                else if (itemDef instanceof reco.ui.form.FormDefItemSimple) { this.generateSimple(this.divForm, itemDef, item); }
+                else if (itemDef instanceof reco.ui.form.FormDefItemTree) { this.generateTree(this.divForm, itemDef, item); }
+                else if (itemDef instanceof reco.ui.form.FormDefItemSelect) { this.generateSelect(this.divForm, itemDef, item); }
+                else if (itemDef instanceof reco.ui.form.FormDefItemAction) { this.generateAction(this.divForm, itemDef, item); }
+                else if (itemDef instanceof reco.ui.form.FormDefItemActions) { this.generateActions(this.divForm, itemDef, item); }
+                else if (itemDef instanceof reco.ui.form.FormDefItemTable) { this.generateTable(this.divForm, itemDef, item); }
             }
-            html += `<div>`;
-            return html;
+            this.elt.innerHTML = "";
+            this.elt.appendChild(this.divForm);
+            return this.divForm;
         }
         // ----------------------------------------------------------------------------------------
-        generateTitle(itemDef: FormDefItemTitle, item: FormItem): string {
+        generateTitle(parentElt: HTMLElement, itemDef: FormDefItemTitle, item: FormItem): void {
             this.form.debug("    FormGenerator.generateTitle");
-            let html = "";
-            html += `<div class="form-title ${item.cssClassObjId}" style="grid-column: 1 / span 2" id="${item.id}-title">${item.label}</div>`;
-            return html;
+            let itemElt = document.createElement("div");
+            itemElt.className = `form-title ${item.cssClassObjId}`;
+            itemElt.style.gridColumn = "1 / span 2";
+            itemElt.id = `${item.id}-title`;
+            itemElt.innerHTML = item.label;
+            this.divForm.appendChild(itemElt);
         }
         // ----------------------------------------------------------------------------------------
-        generateLabel(itemDef: FormDefItemLabel, item: FormItem): string {
+        generateLabel(parentElt: HTMLElement, itemDef: FormDefItemLabel, item: FormItem): void {
             this.form.debug("    FormGenerator.generateLabel");
-            let html = "";
-            html += `    <div class="label-label label" id="${item.id}-label">${item.label}</div>\n`;
-            html += `    <div class="label-value value ${item.cssClassObjId}" id="${item.id}-value">${item.value}</div>`;
-            return html;
+            let itemEltLabel = document.createElement("div");
+            itemEltLabel.className = `label-label label ${item.cssClassObjId}`;
+            itemEltLabel.id = `${item.id}-label`;
+            itemEltLabel.innerHTML = item.label;
+            let itemEltValue = document.createElement("div");
+            itemEltValue.className = `label-value value ${item.cssClassObjId}`;
+            itemEltValue.id = `${item.id}-value`;
+            itemEltValue.innerHTML = item.value;
+            parentElt.appendChild(itemEltLabel);
+            parentElt.appendChild(itemEltValue);
         }
         // ----------------------------------------------------------------------------------------
-        generateSimple(itemDef: FormDefItemSimple, item: FormItem): string {
+        generateSimple(parentElt: HTMLElement, itemDef: FormDefItemSimple, item: FormItem): void {
             this.form.debug("    FormGenerator.generateSimple");
-            let html = "";
-            html += `   <div class="simple-label label" id="${item.id}-label">${item.label}</div>\n`;
-            html += `   <input class="simple-input value editable ${item.cssClassObjId}"  id="${item.id}-input" type="text" value="${item.value}">`;
-            return html;
+            let itemEltLabel = document.createElement("div");
+            itemEltLabel.className = `simple-label label`;
+            itemEltLabel.id = `${item.id}-label`;
+            itemEltLabel.innerHTML = item.label;
+            let itemEltValue = document.createElement("input");
+            itemEltValue.className = `simple-input value editable ${item.cssClassObjId}`;
+            itemEltValue.id = `${item.id}-input`;
+            itemEltValue.type = "text";
+            itemEltValue.value = item.value;
+            parentElt.appendChild(itemEltLabel);
+            parentElt.appendChild(itemEltValue);
         }
         // ----------------------------------------------------------------------------------------
-        generateTree(itemDef: FormDefItemTree, item: FormItem): string {
+        generateTree(parentElt: HTMLElement, itemDef: FormDefItemTree, item: FormItem): void {
             this.form.debug("    FormGenerator.generateTree");
-            let html = "";
-            html += `   <div class="tree-label label" style="grid-column: 1 / span 2" id="${item.id}-label">${item.label}</div>\n`;
-            html += `   <div class="div-tree" style="grid-column: 1 / span 2" id="${item.id}"></div>`;
-            return html;
+            let itemEltLabel = document.createElement("div");
+            itemEltLabel.className = `tree-label label`;
+            itemEltLabel.style.gridColumn = "1 / span 2";
+            itemEltLabel.id = `${item.id}-label`;
+            itemEltLabel.innerHTML = item.label;
+            let itemEltValue = document.createElement("div");
+            itemEltValue.className = `div-tree`;
+            itemEltValue.style.gridColumn = "1 / span 2";
+            itemEltValue.id = `${item.id}`;
+            parentElt.appendChild(itemEltLabel);
+            parentElt.appendChild(itemEltValue);
         }
         // ----------------------------------------------------------------------------------------
-        generateSelect(itemDef: FormDefItemSelect, item: FormItem): string {
+        generateSelect(parentElt: HTMLElement, itemDef: FormDefItemSelect, item: FormItem): void {
             this.form.debug("    FormGenerator.generateSelect");
-            let html = "";
-            html += `   <div class="select-label label" id="${item.id}-label">${item.label}</div>\n`;
-            html += `   <select class="select-select value editable ${item.cssClassObjId}"  id="${item.id}-select">\n`;
+            let itemEltLabel = document.createElement("div");
+            itemEltLabel.className = `select-label label`;
+            itemEltLabel.id = `${item.id}-label`;
+            itemEltLabel.innerHTML = item.label;
+            let itemEltValue = document.createElement("select");
+            itemEltValue.className = `select-select value editable ${item.cssClassObjId}`;
+            itemEltValue.id = `${item.id}-select`;
             let selectedValue = item.value;
             for (let option of item.selectOptions) {
-                html += `           <option value="${option.value}" ${option.value === selectedValue ? 'selected' : ''}>${option.label}</option>\n`;
+                let itemEltOption = document.createElement("option");
+                itemEltOption.value = option.value;
+                itemEltOption.innerHTML = option.label;
+                itemEltOption.selected = option.value === selectedValue;
+                itemEltValue.appendChild(itemEltOption);
             }
-            html += `   </select>`;
-            return html;
+            parentElt.appendChild(itemEltLabel);
+            parentElt.appendChild(itemEltValue);
         }
         // ----------------------------------------------------------------------------------------
-        generateAction(itemDef: FormDefItemAction, item: FormItem): string {
+        generateAction(parentElt: HTMLElement, itemDef: FormDefItemAction, item: FormItem): void {
             this.form.debug("    FormGenerator.generateAction");
-            let html = "";
-            html += `   <button type="button" class="action-button" id="${item.id}">${item.label}</button>`;
-            return html;
+            let itemEltValue = document.createElement("button");
+            itemEltValue.type = "button";
+            itemEltValue.className = `action-button`;
+            itemEltValue.id = `${item.id}`;
+            itemEltValue.innerHTML = item.label;
+            parentElt.appendChild(itemEltValue);
         }
         // ----------------------------------------------------------------------------------------
-        generateActions(itemDef: FormDefItemActions, item: FormItem): string {
+        generateActions(parentElt: HTMLElement, itemDef: FormDefItemActions, item: FormItem): void {
             this.form.debug("    FormGenerator.generateActions");
-            let html = "";
-            html += `   <div class="actions-label label" id="${item.id}-label">${item.label}</div>\n`;
-            html += `   <div class="actions-buttons">\n`;
+            let itemEltLabel = document.createElement("div");
+            itemEltLabel.className = `actions-label label`;
+            itemEltLabel.id = `${item.id}-label`;
+            itemEltLabel.innerHTML = item.label;
+            let itemEltButtons = document.createElement("div");
+            itemEltButtons.className = `actions-buttons`;
             let parent = item;
             let parentItemDef = parent.itemDef as FormDefItemActions;
             for (let actionDef of parentItemDef.actionsDef) {
                 let item = this.form.newItem(actionDef, parent);
-                html += `           <button type="button" class="action-button" id="${item.id}">${item.label}</button>\n`;
+                let itemEltButton = document.createElement("button");
+                itemEltButton.type = "button";
+                itemEltButton.className = `action-button`;
+                itemEltButton.id = `${item.id}`;
+                itemEltButton.innerHTML = item.label;
+                itemEltButtons.appendChild(itemEltButton);
             }
-            html += `   </div>`;
-            return html;
+            parentElt.appendChild(itemEltLabel);
+            parentElt.appendChild(itemEltButtons);
         }
         // ----------------------------------------------------------------------------------------
-        generateTable(itemDef: FormDefItemTable, item: FormItem): string {
+        generateTable(parentElt: HTMLElement, itemDef: FormDefItemTable, item: FormItem): void {
             this.form.debug("    FormGenerator.generateTable");
-            let html = "";
-            html += `       <div class="table-label label" style="grid-column: 1 / span 2">${item.label}</div>\n`;
-            html += `       <div class="div-table" style="grid-column: 1 / span 2">\n`;
-            html += `       <table style="table-layout: fixed;" class="table-table ${itemDef.isResizable ? 'resizable' : 'not-resizable'}    ">\n`;
-            html += `           <thead>\n`;
+            let itemEltLabel = document.createElement("div");
+            itemEltLabel.className = `table-label label`;
+            itemEltLabel.style.gridColumn = "1 / span 2";
+            itemEltLabel.innerHTML = item.label;
+            let itemEltTableDiv = document.createElement("div");
+            itemEltTableDiv.className = `div-table`;
+            itemEltTableDiv.style.gridColumn = "1 / span 2";
+            let itemEltTable = document.createElement("table");
+            itemEltTable.style.tableLayout = "fixed";
+            itemEltTable.className = `table-table ${itemDef.isResizable ? 'resizable' : 'not-resizable'}`;
+            let itemEltTableHead = document.createElement("thead");
+            itemEltTableHead.style.tableLayout = "fixed";
+            itemEltTableHead.className = `table-table ${itemDef.isResizable ? 'resizable' : 'not-resizable'}`;
             let parent = item;
             let parentItemDef = parent.itemDef as FormDefItemTable;
             this.form.debug("render form template table header, parent >", parent);
@@ -113,37 +171,53 @@ namespace reco.ui.form {
                 let item = this.form.newItem(colDef, parent);
                 this.form.debug("render form template table header, col item >", item);
                 let isColDefAction = colDef instanceof reco.ui.form.FormDefItemAction || colDef instanceof reco.ui.form.FormDefItemActions;
-                html += `                   <th style = "overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" > ${isColDefAction ? "" : item.label} </th>\n`;
-            }
-            html += `           </thead>\n`;
-            html += `           <tbody>\n`;
+                let itemEltTableHeadCell = document.createElement("th");
+                itemEltTableHeadCell.style.overflow = "hidden";
+                itemEltTableHeadCell.style.whiteSpace = "nowrap";
+                itemEltTableHeadCell.style.textOverflow = "ellipsis";
+                itemEltTableHeadCell.innerHTML = isColDefAction ? "" : item.label;
+                itemEltTableHead.appendChild(itemEltTableHeadCell);
+            } 
+            let itemEltTableBody = document.createElement("tbody");
             this.form.debug("table parent.objList => ", parent.objList);
             for (let index = 0; index < parent.objList!.length; index++) {
-                html += `               <tr>\n`;
+                let itemEltTableBodyRow = document.createElement("tr");
                 let itemItemDef = parent.itemDef as FormDefItemTable;
                 for (let colDef of itemItemDef.colsDef) {
                     let item = this.form.newItem(colDef, parent);
                     item.obj = parent.objList![index];
                     this.form.debug("render form template table row, colDef, obj >", colDef, item.obj);
                     let isColDefAction = colDef instanceof reco.ui.form.FormDefItemAction || colDef instanceof reco.ui.form.FormDefItemActions;
+                    let itemEltTableBodyRowCell = document.createElement("td");
                     if (isColDefAction) {
-                        html += `                               <td style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;"\n`;
-                        html += `                                   id="${item.id}-value}">\n`;
-                        html += `                                   <button type="button" class="action-button" id="${item.id}" title="${item.label}">\n`;
-                        html += `                                   ${item.label}</button>\n`;
-                        html += `                               </td> <%  \n`;
+                        itemEltTableBodyRowCell.style.overflow = "hidden";
+                        itemEltTableBodyRowCell.style.whiteSpace = "nowrap";
+                        itemEltTableBodyRowCell.style.textOverflow = "ellipsis";
+                        itemEltTableBodyRowCell.id = `${item.id}-value`;
+                        let itemEltTableBodyRowCellButton = document.createElement("button");
+                        itemEltTableBodyRowCellButton.type = "button";
+                        itemEltTableBodyRowCellButton.className = `action-button`;
+                        itemEltTableBodyRowCellButton.id = `${item.id}`;
+                        itemEltTableBodyRowCellButton.title = `${item.label}`;
+                        itemEltTableBodyRowCellButton.innerHTML = item.label;
+                        itemEltTableBodyRowCell.appendChild(itemEltTableBodyRowCellButton);
                     } else {
-                        html += `                               <td style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;"\n`;
-                        html += `                                   id="${item.id}-value}" \n`;
-                        html += `                                   title="${item.value}"= >${item.value ? item.value : ''}</td>\n`;
+                        itemEltTableBodyRowCell.style.overflow = "hidden";
+                        itemEltTableBodyRowCell.style.whiteSpace = "nowrap";
+                        itemEltTableBodyRowCell.style.textOverflow = "ellipsis";
+                        itemEltTableBodyRowCell.id = `${item.id}-value`;
+                        itemEltTableBodyRowCell.title = `${item.value}`;
+                        itemEltTableBodyRowCell.innerHTML = item.value ? item.value : '';
                     }
+                    itemEltTableBodyRow.appendChild(itemEltTableBodyRowCell);
                 }
-                html += `               </tr>\n`;
+            itemEltTableBody.appendChild(itemEltTableBodyRow);
             }
-            html += `           </tbody>\n`;
-            html += `       </table>\n`;
-            html += `       </div>`;
-            return html;
+            itemEltTable.appendChild(itemEltTableHead);
+            itemEltTable.appendChild(itemEltTableBody);
+            itemEltTableDiv.appendChild(itemEltTable);
+            parentElt.appendChild(itemEltLabel);
+            parentElt.appendChild(itemEltTableDiv);
         }
         // ----------------------------------------------------------------------------------------
     }
