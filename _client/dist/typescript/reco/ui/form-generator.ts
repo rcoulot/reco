@@ -27,7 +27,7 @@ namespace reco.ui.form {
                 item.objList = item.objList ? item.objList : this.form.objList;
                 this.form.debug("render form item", item)
                 if (itemDef instanceof reco.ui.form.FormDefItemTitle) { this.generateTitle(this.divForm, itemDef, item); }
-                else if (itemDef instanceof reco.ui.form.FormDefItemLabel) { this.generateLabel(this.divForm, itemDef, item); }
+                else if (itemDef instanceof reco.ui.form.FormDefItemLabel) { this.generateLabelValue(this.divForm, itemDef, item); }
                 else if (itemDef instanceof reco.ui.form.FormDefItemSimple) { this.generateSimple(this.divForm, itemDef, item); }
                 else if (itemDef instanceof reco.ui.form.FormDefItemTree) { this.generateTree(this.divForm, itemDef, item); }
                 else if (itemDef instanceof reco.ui.form.FormDefItemSelect) { this.generateSelect(this.divForm, itemDef, item); }
@@ -40,6 +40,22 @@ namespace reco.ui.form {
             return this.divForm;
         }
         // ----------------------------------------------------------------------------------------
+        createLabelElt(itemDef: FormDefItemLabel, item: FormItem): HTMLDivElement {
+            let itemEltLabel = document.createElement("div");
+            itemEltLabel.className = `label-label label ${item.cssClassObjId}`;
+            itemEltLabel.id = `${item.id}-label`;
+            itemEltLabel.innerHTML = item.label;
+            return itemEltLabel;
+        }
+        // ----------------------------------------------------------------------------------------
+        createLabelValueElt(itemDef: FormDefItemLabel, item: FormItem): HTMLDivElement {
+            let itemEltValue = document.createElement("div");
+            itemEltValue.className = `label-value value ${item.cssClassObjId}`;
+            itemEltValue.id = `${item.id}-value`;
+            itemEltValue.innerHTML = item.value;
+            return itemEltValue;
+        }
+        // ----------------------------------------------------------------------------------------
         generateTitle(parentElt: HTMLElement, itemDef: FormDefItemTitle, item: FormItem): void {
             this.form.debug("    FormGenerator.generateTitle");
             let itemElt = document.createElement("div");
@@ -50,26 +66,17 @@ namespace reco.ui.form {
             this.divForm.appendChild(itemElt);
         }
         // ----------------------------------------------------------------------------------------
-        generateLabel(parentElt: HTMLElement, itemDef: FormDefItemLabel, item: FormItem): void {
-            this.form.debug("    FormGenerator.generateLabel");
-            let itemEltLabel = document.createElement("div");
-            itemEltLabel.className = `label-label label ${item.cssClassObjId}`;
-            itemEltLabel.id = `${item.id}-label`;
-            itemEltLabel.innerHTML = item.label;
-            let itemEltValue = document.createElement("div");
-            itemEltValue.className = `label-value value ${item.cssClassObjId}`;
-            itemEltValue.id = `${item.id}-value`;
-            itemEltValue.innerHTML = item.value;
+        generateLabelValue(parentElt: HTMLElement, itemDef: FormDefItemLabel, item: FormItem): void {
+            this.form.debug("    FormGenerator.generateLabelValue");
+            let itemEltLabel = this.createLabelElt(itemDef, item);
+            let itemEltValue = this.createLabelValueElt(itemDef, item);
             parentElt.appendChild(itemEltLabel);
             parentElt.appendChild(itemEltValue);
         }
         // ----------------------------------------------------------------------------------------
         generateSimple(parentElt: HTMLElement, itemDef: FormDefItemSimple, item: FormItem): void {
             this.form.debug("    FormGenerator.generateSimple");
-            let itemEltLabel = document.createElement("div");
-            itemEltLabel.className = `simple-label label`;
-            itemEltLabel.id = `${item.id}-label`;
-            itemEltLabel.innerHTML = item.label;
+            let itemEltLabel = this.createLabelElt(itemDef, item);
             let itemEltValue = document.createElement("input");
             itemEltValue.className = `simple-input value editable ${item.cssClassObjId}`;
             itemEltValue.id = `${item.id}-input`;
@@ -81,11 +88,8 @@ namespace reco.ui.form {
         // ----------------------------------------------------------------------------------------
         generateTree(parentElt: HTMLElement, itemDef: FormDefItemTree, item: FormItem): void {
             this.form.debug("    FormGenerator.generateTree");
-            let itemEltLabel = document.createElement("div");
-            itemEltLabel.className = `tree-label label`;
+            let itemEltLabel = this.createLabelElt(itemDef, item);
             itemEltLabel.style.gridColumn = "1 / span 2";
-            itemEltLabel.id = `${item.id}-label`;
-            itemEltLabel.innerHTML = item.label;
             let itemEltValue = document.createElement("div");
             itemEltValue.className = `div-tree`;
             itemEltValue.style.gridColumn = "1 / span 2";
@@ -96,10 +100,7 @@ namespace reco.ui.form {
         // ----------------------------------------------------------------------------------------
         generateSelect(parentElt: HTMLElement, itemDef: FormDefItemSelect, item: FormItem): void {
             this.form.debug("    FormGenerator.generateSelect");
-            let itemEltLabel = document.createElement("div");
-            itemEltLabel.className = `select-label label`;
-            itemEltLabel.id = `${item.id}-label`;
-            itemEltLabel.innerHTML = item.label;
+            let itemEltLabel = this.createLabelElt(itemDef, item);
             let itemEltValue = document.createElement("select");
             itemEltValue.className = `select-select value editable ${item.cssClassObjId}`;
             itemEltValue.id = `${item.id}-select`;
@@ -127,10 +128,7 @@ namespace reco.ui.form {
         // ----------------------------------------------------------------------------------------
         generateActions(parentElt: HTMLElement, itemDef: FormDefItemActions, item: FormItem): void {
             this.form.debug("    FormGenerator.generateActions");
-            let itemEltLabel = document.createElement("div");
-            itemEltLabel.className = `actions-label label`;
-            itemEltLabel.id = `${item.id}-label`;
-            itemEltLabel.innerHTML = item.label;
+            let itemEltLabel = this.createLabelElt(itemDef, item);
             let itemEltButtons = document.createElement("div");
             itemEltButtons.className = `actions-buttons`;
             let parent = item;
@@ -150,10 +148,8 @@ namespace reco.ui.form {
         // ----------------------------------------------------------------------------------------
         generateTable(parentElt: HTMLElement, itemDef: FormDefItemTable, item: FormItem): void {
             this.form.debug("    FormGenerator.generateTable");
-            let itemEltLabel = document.createElement("div");
-            itemEltLabel.className = `table-label label`;
+            let itemEltLabel = this.createLabelElt(itemDef, item);
             itemEltLabel.style.gridColumn = "1 / span 2";
-            itemEltLabel.innerHTML = item.label;
             let itemEltTableDiv = document.createElement("div");
             itemEltTableDiv.className = `div-table`;
             itemEltTableDiv.style.gridColumn = "1 / span 2";
@@ -189,10 +185,10 @@ namespace reco.ui.form {
                     this.form.debug("render form template table row, colDef, obj >", colDef, item.obj);
                     let isColDefAction = colDef instanceof reco.ui.form.FormDefItemAction || colDef instanceof reco.ui.form.FormDefItemActions;
                     let itemEltTableBodyRowCell = document.createElement("td");
-                    if (isColDefAction) {
                         itemEltTableBodyRowCell.style.overflow = "hidden";
                         itemEltTableBodyRowCell.style.whiteSpace = "nowrap";
                         itemEltTableBodyRowCell.style.textOverflow = "ellipsis";
+                    if (isColDefAction) {
                         itemEltTableBodyRowCell.id = `${item.id}-value`;
                         let itemEltTableBodyRowCellButton = document.createElement("button");
                         itemEltTableBodyRowCellButton.type = "button";
@@ -202,6 +198,7 @@ namespace reco.ui.form {
                         itemEltTableBodyRowCellButton.innerHTML = item.label;
                         itemEltTableBodyRowCell.appendChild(itemEltTableBodyRowCellButton);
                     } else {
+                        let itemEltValue = this.createLabelValueElt(itemDef, item);
                         itemEltTableBodyRowCell.style.overflow = "hidden";
                         itemEltTableBodyRowCell.style.whiteSpace = "nowrap";
                         itemEltTableBodyRowCell.style.textOverflow = "ellipsis";
