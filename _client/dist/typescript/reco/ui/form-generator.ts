@@ -26,14 +26,14 @@ namespace reco.ui.form {
                 item.obj = item.obj ? item.obj : this.form.obj;
                 item.objList = item.objList ? item.objList : this.form.objList;
                 this.form.debug("render form item", item)
-                if (itemDef instanceof reco.ui.form.FormDefItemTitle) { this.generateTitle(this.divForm, itemDef, item); }
-                else if (itemDef instanceof reco.ui.form.FormDefItemLabel) { this.generateLabelValue(this.divForm, itemDef, item); }
-                else if (itemDef instanceof reco.ui.form.FormDefItemSimple) { this.generateSimple(this.divForm, itemDef, item); }
-                else if (itemDef instanceof reco.ui.form.FormDefItemTree) { this.generateTree(this.divForm, itemDef, item); }
-                else if (itemDef instanceof reco.ui.form.FormDefItemSelect) { this.generateSelect(this.divForm, itemDef, item); }
-                else if (itemDef instanceof reco.ui.form.FormDefItemAction) { this.generateAction(this.divForm, itemDef, item); }
-                else if (itemDef instanceof reco.ui.form.FormDefItemActions) { this.generateActions(this.divForm, itemDef, item); }
-                else if (itemDef instanceof reco.ui.form.FormDefItemTable) { this.generateTable(this.divForm, itemDef, item); }
+                if (itemDef instanceof FormDefItemTitle) { this.generateTitle(this.divForm, itemDef, item); }
+                else if (itemDef instanceof FormDefItemLabel) { this.generateLabelValue(this.divForm, itemDef, item); }
+                else if (itemDef instanceof FormDefItemSimple) { this.generateSimple(this.divForm, itemDef, item); }
+                else if (itemDef instanceof FormDefItemTree) { this.generateTree(this.divForm, itemDef, item); }
+                else if (itemDef instanceof FormDefItemSelect) { this.generateSelect(this.divForm, itemDef, item); }
+                else if (itemDef instanceof FormDefItemAction) { this.generateAction(this.divForm, itemDef, item); }
+                else if (itemDef instanceof FormDefItemActions) { this.generateActions(this.divForm, itemDef, item); }
+                else if (itemDef instanceof FormDefItemTable) { this.generateTable(this.divForm, itemDef, item); }
             }
             this.elt.innerHTML = "";
             this.elt.appendChild(this.divForm);
@@ -52,7 +52,17 @@ namespace reco.ui.form {
             let itemEltValue = document.createElement("div");
             itemEltValue.className = `label-value value ${item.cssClassObjId}`;
             itemEltValue.id = `${item.id}-value`;
-            itemEltValue.innerHTML = item.value;
+            itemEltValue.innerHTML = item.value ? item.value : '';
+            return itemEltValue;
+        }
+        // ----------------------------------------------------------------------------------------
+        createSimpleElt(itemDef: FormDefItemSimple, item: FormItem): HTMLInputElement {
+            this.form.debug("    FormGenerator.generateSimple");
+            let itemEltValue = document.createElement("input");
+            itemEltValue.className = `simple-input value editable ${item.cssClassObjId}`;
+            itemEltValue.id = `${item.id}-input`;
+            itemEltValue.type = "text";
+            itemEltValue.value = item.value ? item.value : '';
             return itemEltValue;
         }
         // ----------------------------------------------------------------------------------------
@@ -77,11 +87,7 @@ namespace reco.ui.form {
         generateSimple(parentElt: HTMLElement, itemDef: FormDefItemSimple, item: FormItem): void {
             this.form.debug("    FormGenerator.generateSimple");
             let itemEltLabel = this.createLabelElt(itemDef, item);
-            let itemEltValue = document.createElement("input");
-            itemEltValue.className = `simple-input value editable ${item.cssClassObjId}`;
-            itemEltValue.id = `${item.id}-input`;
-            itemEltValue.type = "text";
-            itemEltValue.value = item.value;
+            let itemEltValue = this.createSimpleElt(itemDef, item);
             parentElt.appendChild(itemEltLabel);
             parentElt.appendChild(itemEltValue);
         }
@@ -173,7 +179,7 @@ namespace reco.ui.form {
                 itemEltTableHeadCell.style.textOverflow = "ellipsis";
                 itemEltTableHeadCell.innerHTML = isColDefAction ? "" : item.label;
                 itemEltTableHead.appendChild(itemEltTableHeadCell);
-            } 
+            }
             let itemEltTableBody = document.createElement("tbody");
             this.form.debug("table parent.objList => ", parent.objList);
             for (let index = 0; index < parent.objList!.length; index++) {
@@ -185,11 +191,11 @@ namespace reco.ui.form {
                     this.form.debug("render form template table row, colDef, obj >", colDef, item.obj);
                     let isColDefAction = colDef instanceof reco.ui.form.FormDefItemAction || colDef instanceof reco.ui.form.FormDefItemActions;
                     let itemEltTableBodyRowCell = document.createElement("td");
+                    itemEltTableBodyRowCell.style.overflow = "hidden";
+                    itemEltTableBodyRowCell.style.whiteSpace = "nowrap";
+                    itemEltTableBodyRowCell.style.textOverflow = "ellipsis";
+                    itemEltTableBodyRowCell.id = `${item.id}-cell`;
                     if (isColDefAction) {
-                        itemEltTableBodyRowCell.id = `${item.id}-value`;
-                        itemEltTableBodyRowCell.style.overflow = "hidden";
-                        itemEltTableBodyRowCell.style.whiteSpace = "nowrap";
-                        itemEltTableBodyRowCell.style.textOverflow = "ellipsis";
                         let itemEltTableBodyRowCellButton = document.createElement("button");
                         itemEltTableBodyRowCellButton.type = "button";
                         itemEltTableBodyRowCellButton.className = `action-button`;
@@ -197,18 +203,23 @@ namespace reco.ui.form {
                         itemEltTableBodyRowCellButton.title = `${item.label}`;
                         itemEltTableBodyRowCellButton.innerHTML = item.label;
                         itemEltTableBodyRowCell.appendChild(itemEltTableBodyRowCellButton);
-                    } else {
+                    } else if (colDef instanceof FormDefItemLabel) {
                         let itemEltValue = this.createLabelValueElt(itemDef, item);
-                        itemEltTableBodyRowCell.style.overflow = "hidden";
-                        itemEltTableBodyRowCell.style.whiteSpace = "nowrap";
-                        itemEltTableBodyRowCell.style.textOverflow = "ellipsis";
-                        itemEltTableBodyRowCell.id = `${item.id}-value`;
-                        itemEltTableBodyRowCell.title = `${item.value}`;
-                        itemEltTableBodyRowCell.innerHTML = item.value ? item.value : '';
+                        itemEltValue.style.border = "none";
+                        itemEltValue.style.margin = "0";
+                        itemEltValue.title = `${item.value}`;
+                        itemEltTableBodyRowCell.appendChild(itemEltValue);
+                    } else if (colDef instanceof FormDefItemSimple) {
+                        let itemEltValue = this.createSimpleElt(itemDef, item);
+                        itemEltValue.style.border = "none";
+                        itemEltValue.style.margin = "0";
+                        itemEltValue.style.width = "100%";
+                        itemEltValue.title = `${item.value}`;
+                        itemEltTableBodyRowCell.appendChild(itemEltValue);
                     }
                     itemEltTableBodyRow.appendChild(itemEltTableBodyRowCell);
                 }
-            itemEltTableBody.appendChild(itemEltTableBodyRow);
+                itemEltTableBody.appendChild(itemEltTableBodyRow);
             }
             itemEltTable.appendChild(itemEltTableHead);
             itemEltTable.appendChild(itemEltTableBody);
