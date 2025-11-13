@@ -12,7 +12,12 @@ namespace reco.ui.svg {
         childrenElements: SVGElement[] = [];
         drag: { evX0: number, evY0: number, groupX0: number, groupY0: number, group: SvgGroup } | null = null
         // ----------------------------------------------------------------------------------------
+        zoomFactor = 1;
+        widthInit: number;
+        heightInit: number;
+        // ----------------------------------------------------------------------------------------
         constructor(id: string, width: string, height: string) {
+            let THIS = this;
             this.id = id;
             this.elt = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             this.elt.setAttribute("id", id);
@@ -40,10 +45,42 @@ namespace reco.ui.svg {
                 evt.stopPropagation();
                 this.onup();
             });
+            window.onkeydown = function (ev) {
+                // console.log("key '"+ev.key+"'")
+                if (ev.ctrlKey && ev.key == "ArrowUp") THIS.zoomIn();
+                else if (ev.ctrlKey && ev.key == "ArrowDown") THIS.zoomOut();
+            }
+            // Récupérer le viewBox actuel ou créer un par défaut
+            this.widthInit = Math.round(this.elt.getBoundingClientRect().width);
+            this.heightInit = Math.round(this.elt.getBoundingClientRect().height);
+            this.elt.setAttribute('viewBox', `0 0 ${this.widthInit} ${this.heightInit}`);
+
+        }
+        // ----------------------------------------------------------------------------------------
+        zoomIn() { this.zoomFactor += 0.1; this.zoom(); }
+        zoomOut() { this.zoomFactor -= 0.1; this.zoom(); }
+        // ----------------------------------------------------------------------------------------
+        zoom() {
+            this.zoomFactor = this.zoomFactor < 0.1 ? 0.1 : this.zoomFactor;
+            this.zoomFactor = Math.round(this.zoomFactor*100)/100;
+            let viewBox = this.elt.viewBox.baseVal;
+            // Calculer les nouvelles dimensions
+            const newWidth = Math.round(this.widthInit / this.zoomFactor)
+            const newHeight = Math.round(this.heightInit / this.zoomFactor)
+            // Calculer le centre si non spécifié
+            const cx = viewBox.x + viewBox.width / 2;
+            const cy = viewBox.y + viewBox.height / 2;
+            // Calculer la nouvelle position pour centrer le zoom
+            const newX = cx - newWidth / 2;
+            const newY = cy - newHeight / 2;
+            // Appliquer le nouveau viewBox
+            this.elt.setAttribute('viewBox', `${newX} ${newY} ${newWidth} ${newHeight}`);
+            console.log("zoomFactor = " + this.zoomFactor + " ## " + this.widthInit + " >> " + newWidth)
         }
         // ----------------------------------------------------------------------------------------
         refresh() {
             for (let group of this.childrenGroups) group.refresh();
+            this.zoom();
         }
         // ----------------------------------------------------------------------------------------
         border(size: number, color: string): SvgRoot {
@@ -67,10 +104,10 @@ namespace reco.ui.svg {
         // ----------------------------------------------------------------------------------------
         onmove(offsetX: number, offsetY: number) {
             if (this.drag) {
-                // this.drag.item.elt.setAttribute("x", (this.drag.itemX0 + offsetX - this.drag.evX0).toString());
-                // this.drag.item.elt.setAttribute("y", (this.drag.itemY0 + offsetY - this.drag.evY0).toString());
-                this.drag.group.moveTo(this.drag.groupX0 + offsetX - this.drag.evX0,
-                    this.drag.groupY0 + offsetY - this.drag.evY0);
+                this.drag.group.moveTo(
+                    this.drag.groupX0 + (offsetX - this.drag.evX0) / this.zoomFactor,
+                    this.drag.groupY0 + (offsetY - this.drag.evY0) / this.zoomFactor
+                );
             }
         }
         // ----------------------------------------------------------------------------------------
@@ -350,7 +387,7 @@ namespace reco.ui.svg {
             this.eltTitleBorder.setAttribute('x', (bbox.x).toString());
             this.eltTitleBorder.setAttribute('y', (bbox.y).toString());
             this.eltTitleBorder.setAttribute('width', (bbox.width).toString());
-            this.eltTitleBorder.setAttribute('height', (this.titleItem!.elt.getBoundingClientRect().height + 2*2).toString());
+            this.eltTitleBorder.setAttribute('height', (this.titleItem!.elt.getBoundingClientRect().height + 2 * 2).toString());
             this.eltTitleBorder.setAttribute('stroke', color);
             this.eltTitleBorder.setAttribute('stroke-width', size.toString());
             return this;
@@ -394,8 +431,8 @@ namespace reco.ui.svg {
         .line("(a) country")
         .add();
 
-
     svg.refresh();
+
     // ============================================================================================
 }
 // ################################################################################################
