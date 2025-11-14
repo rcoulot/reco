@@ -8,8 +8,11 @@ namespace reco.ui.svg {
         id: string;
         elt: SVGSVGElement;
         childrenGroups: SvgGroup[] = [];
-        childrenGroupById: { [id: string]: SvgGroup } = {};
-        childrenElements: SVGElement[] = [];
+        childrenGroupsById: { [id: string]: SvgGroup } = {};
+        childrenGroupElements: SVGElement[] = [];
+        childrenLines: SvgLine[] = [];
+        childrenLinesById: { [id: string]: SvgLine } = {};
+        childrenLineElements: SVGLineElement[] = [];
         drag: { evX0: number, evY0: number, groupX0: number, groupY0: number, group: SvgGroup } | null = null
         // ----------------------------------------------------------------------------------------
         zoomFactor = 1;
@@ -62,7 +65,7 @@ namespace reco.ui.svg {
         // ----------------------------------------------------------------------------------------
         zoom() {
             this.zoomFactor = this.zoomFactor < 0.1 ? 0.1 : this.zoomFactor;
-            this.zoomFactor = Math.round(this.zoomFactor*100)/100;
+            this.zoomFactor = Math.round(this.zoomFactor * 100) / 100;
             let viewBox = this.elt.viewBox.baseVal;
             // Calculer les nouvelles dimensions
             const newWidth = Math.round(this.widthInit / this.zoomFactor)
@@ -76,11 +79,12 @@ namespace reco.ui.svg {
             // Appliquer le nouveau viewBox
             this.elt.setAttribute('viewBox', `${newX} ${newY} ${newWidth} ${newHeight}`);
             console.log("zoomFactor = " + this.zoomFactor + " ## " + this.widthInit + " >> " + newWidth)
+            for (let line of this.childrenLines) line.refresh();
         }
         // ----------------------------------------------------------------------------------------
         refresh() {
             for (let group of this.childrenGroups) group.refresh();
-            this.zoom();
+            for (let line of this.childrenLines) line.refresh();
         }
         // ----------------------------------------------------------------------------------------
         border(size: number, color: string): SvgRoot {
@@ -90,8 +94,8 @@ namespace reco.ui.svg {
         // ----------------------------------------------------------------------------------------
         ondown(target: EventTarget, offsetX: number, offsetY: number) {
             let targetParent = (target as SVGElement).parentNode as SVGGElement
-            if (this.childrenElements.indexOf(targetParent) !== -1) {
-                const group = this.childrenGroupById[targetParent.id];
+            if (this.childrenGroupElements.indexOf(targetParent) !== -1) {
+                const group = this.childrenGroupsById[targetParent.id];
                 this.drag = {
                     "group": group,
                     "evX0": offsetX,
@@ -108,6 +112,7 @@ namespace reco.ui.svg {
                     this.drag.groupX0 + (offsetX - this.drag.evX0) / this.zoomFactor,
                     this.drag.groupY0 + (offsetY - this.drag.evY0) / this.zoomFactor
                 );
+                for (let line of this.childrenLines) line.refresh();
             }
         }
         // ----------------------------------------------------------------------------------------
@@ -140,8 +145,8 @@ namespace reco.ui.svg {
             this.elt.setAttribute("id", this.id);
             this.moveTo(x, y);
             this.svgRoot.childrenGroups.push(this);
-            this.svgRoot.childrenElements.push(this.elt);
-            this.svgRoot.childrenGroupById[this.id] = this;
+            this.svgRoot.childrenGroupElements.push(this.elt);
+            this.svgRoot.childrenGroupsById[this.id] = this;
             this.eltBorder = document.createElementNS("http://www.w3.org/2000/svg", "rect") as any;
             this.eltBorder.setAttribute("x", "" + 0);
             this.eltBorder.setAttribute("y", "" + 0);
@@ -156,10 +161,10 @@ namespace reco.ui.svg {
             this.border(this.borderColor, this.borderSize)
         }
         // ----------------------------------------------------------------------------------------
-        get eltX(): number { return this.elt.getBoundingClientRect().x - this.svgRoot.elt.getBoundingClientRect().x; }
-        get eltY(): number { return this.elt.getBoundingClientRect().y - this.svgRoot.elt.getBoundingClientRect().y; }
-        get eltHeight(): number { return this.elt.getBoundingClientRect().height; }
-        get eltWidth(): number { return this.elt.getBoundingClientRect().width; }
+        get eltX(): number { return this.x; }
+        get eltY(): number { return this.y; }
+        get eltHeight(): number { return this.elt.getBBox().height; }
+        get eltWidth(): number { return this.elt.getBBox().width; }
         // ----------------------------------------------------------------------------------------
         moveTo(x: number, y: number): SvgGroup {
             this.x = x;
@@ -189,6 +194,49 @@ namespace reco.ui.svg {
             this.eltBorder.setAttribute('stroke', color);
             this.eltBorder.setAttribute('stroke-width', size.toString());
             return this;
+        }
+        // ----------------------------------------------------------------------------------------
+    }
+    // ============================================================================================
+    export class SvgLine {
+        // ----------------------------------------------------------------------------------------
+        id: string;
+        svgRoot: SvgRoot;
+        idStart: string;
+        idEnd: string;
+        elt: SVGLineElement;
+        // ----------------------------------------------------------------------------------------
+        constructor(svgRoot: SvgRoot, svgGroupStart: SvgGroup, svgGroupEnd: SvgGroup) {
+            this.svgRoot = svgRoot;
+            this.id = this.svgRoot.id + "-" + this.svgRoot.SEQ++;
+            this.idStart = svgGroupStart.id;
+            this.idEnd = svgGroupEnd.id;
+            this.elt = document.createElementNS("http://www.w3.org/2000/svg", "line") as any;
+            this.elt.style.stroke = "black";
+            this.svgRoot.childrenLines.push(this);
+            this.svgRoot.childrenLineElements.push(this.elt);
+            this.svgRoot.childrenLinesById[this.id] = this;
+        }
+        // ----------------------------------------------------------------------------------------
+        get svgGroupStart(): SvgGroup { return this.svgRoot.childrenGroupsById[this.idStart]; }
+        get svgGroupEnd(): SvgGroup { return this.svgRoot.childrenGroupsById[this.idEnd]; }
+        get startCx(): number { return this.svgGroupStart.eltX + this.svgGroupStart.eltWidth / 2; }
+        get startCy(): number { return this.svgGroupStart.eltY + this.svgGroupStart.eltHeight / 2; }
+        get endCx(): number { return this.svgGroupEnd.eltX + this.svgGroupEnd.eltWidth / 2; }
+        get endCy(): number { return this.svgGroupEnd.eltY + this.svgGroupEnd.eltHeight / 2; }
+        // ----------------------------------------------------------------------------------------
+        add(): SvgLine {
+            this.svgRoot.elt.appendChild(this.elt);
+            this.svgRoot.elt.insertBefore(this.elt, this.svgRoot.elt.firstChild);
+            return this;
+        }
+        // ----------------------------------------------------------------------------------------
+        refresh() {
+            this.elt.setAttribute("id", "" + this.id);
+            this.elt.setAttribute("x1", "" + this.startCx);
+            this.elt.setAttribute("y1", "" + this.startCy);
+            this.elt.setAttribute("x2", "" + this.endCx);
+            this.elt.setAttribute("y2", "" + this.endCy);
         }
         // ----------------------------------------------------------------------------------------
     }
@@ -353,7 +401,8 @@ namespace reco.ui.svg {
         // ----------------------------------------------------------------------------------------
         constructor(svgRoot: SvgRoot, x: number, y: number) {
             super(svgRoot, x, y);
-            this.fill("transparent").border(this.strokeColor).add();
+            // this.fill("transparent").border(this.strokeColor).add();
+            this.fill("white").border(this.strokeColor).add();
             this.eltTitleBorder = document.createElementNS("http://www.w3.org/2000/svg", "rect") as any;
             this.eltTitleBorder.setAttribute("x", "" + 0);
             this.eltTitleBorder.setAttribute("y", "" + 0);
@@ -413,7 +462,7 @@ namespace reco.ui.svg {
     // const r2 = new RectItem(group2, 0, 0, 80, 40).fill("green").border(1, "red").add();
     // new CircleItem(group2, 30, 20, 10).fill("green").border(1, "yellow").add();
 
-    new SvgList(svg, 50, 50)
+    let cls1 = new SvgList(svg, 50, 50)
         .title("(c) Person")
         .separator()
         .line("(a) firstname")
@@ -421,7 +470,7 @@ namespace reco.ui.svg {
         .line("(a) birthdate")
         .add();
 
-    new SvgList(svg, 200, 50)
+    let cls2 = new SvgList(svg, 200, 50)
         .title("(c) Address")
         .separator()
         .line("(a) lines")
@@ -430,6 +479,8 @@ namespace reco.ui.svg {
         .line("(a) state")
         .line("(a) country")
         .add();
+
+    new SvgLine(svg, cls1, cls2).add();
 
     svg.refresh();
 
