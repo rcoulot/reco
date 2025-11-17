@@ -7,6 +7,9 @@ _client/dist/test/**/*.d.ts
 _client/dist/design/**/*.js
 _client/dist/design/**/*.js.map
 _client/dist/design/**/*.d.ts
+_client/dist/boardgame/**/*.js
+_client/dist/boardgame/**/*.js.map
+_client/dist/boardgame/**/*.d.ts
 _client/node_modules
 
 _server/reco/**/*.js
