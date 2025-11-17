@@ -7,6 +7,7 @@
     "watch-ui": "cd dist/typescript/reco/ui && tsc --watch",
     "watch-tests": "cd dist/typescript/test && tsc --watch",
     "watch-design": "cd dist/typescript/design && tsc --watch",
+    "watch-boardgame": "cd dist/boardgame && tsc --watch",
     "server": "http-server ./dist -a 0.0.0.0 -p 3000",
     "ssl-server": "http-server ./dist -p 443 -S -C ./ssl-cert.pem -K ./ssl-key.pem"
   },
