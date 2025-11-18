@@ -76,9 +76,10 @@ namespace reco.boardgame {
         session: Session;
         // ----------------------------------------------------------------------------------------
         constructor(session: Session) {
+            let THIS = this;
             this.session = session;
             window.addEventListener("mousedown", (evt) => {
-                this.ondown(evt.target!, evt.offsetX, evt.offsetY);
+                THIS.onMoveStart(evt.target!, evt.offsetX, evt.offsetY);
             });
             window.addEventListener("mousemove", (evt) => {
                 this.onmove(evt.offsetX, evt.offsetY);
@@ -106,6 +107,12 @@ namespace reco.boardgame {
             });
 
         }
+        // ----------------------------------------------------------------------------------------
+        onMoveStart() { }
+        // ----------------------------------------------------------------------------------------
+        onMove() { }
+        // ----------------------------------------------------------------------------------------
+        onMoveEmd() { }
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
