@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="15.1">
   <help_text>Space for diagram notes</help_text>
-  <zoom_level>9</zoom_level>
+  <zoom_level>7</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>396</x>
-      <y>36</y>
-      <w>333</w>
-      <h>27</h>
+      <x>245</x>
+      <y>63</y>
+      <w>259</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>Session
 bg=light_gray
@@ -18,10 +18,10 @@ fg=blue</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>90</x>
-      <y>126</y>
-      <w>90</w>
-      <h>54</h>
+      <x>7</x>
+      <y>133</y>
+      <w>70</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>Board
 bg=light_gray
@@ -31,38 +31,24 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>171</x>
-      <y>54</y>
-      <w>261</w>
-      <h>117</h>
+      <x>70</x>
+      <y>77</y>
+      <w>203</w>
+      <h>91</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
-common
+board
 m2=1
 fg=blue</panel_attributes>
     <additional_attributes>270.0;10.0;270.0;100.0;10.0;100.0</additional_attributes>
   </element>
   <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>171</x>
-      <y>54</y>
-      <w>288</w>
-      <h>144</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
-private
-m2=1
-fg=blue</panel_attributes>
-    <additional_attributes>300.0;10.0;300.0;130.0;10.0;130.0</additional_attributes>
-  </element>
-  <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>225</x>
-      <y>369</y>
-      <w>90</w>
-      <h>27</h>
+      <x>112</x>
+      <y>280</y>
+      <w>70</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>window
 bg=orange
@@ -72,10 +58,10 @@ fg=blue</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>450</x>
-      <y>351</y>
-      <w>90</w>
-      <h>63</h>
+      <x>287</x>
+      <y>266</y>
+      <w>70</w>
+      <h>49</h>
     </coordinates>
     <panel_attributes>Listener
 bg=light_gray
@@ -86,10 +72,10 @@ layer=-1</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>306</x>
-      <y>378</y>
-      <w>198</w>
-      <h>27</h>
+      <x>175</x>
+      <y>287</y>
+      <w>154</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=&lt;..
 fg=red</panel_attributes>
@@ -98,10 +84,10 @@ fg=red</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>189</x>
-      <y>288</y>
-      <w>126</w>
-      <h>45</h>
+      <x>84</x>
+      <y>217</y>
+      <w>98</w>
+      <h>35</h>
     </coordinates>
     <panel_attributes>Item
 bg=light_gray
@@ -111,23 +97,23 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>99</x>
-      <y>171</y>
-      <w>108</w>
-      <h>162</h>
+      <x>14</x>
+      <y>168</y>
+      <w>84</w>
+      <h>84</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m2=n
 fg=blue</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;150.0;100.0;150.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0;100.0;90.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>990</x>
-      <y>630</y>
-      <w>108</w>
-      <h>81</h>
+      <x>707</x>
+      <y>413</y>
+      <w>84</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>GameManager
 bg=blue
@@ -137,10 +123,10 @@ layer=-1</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>990</x>
-      <y>540</y>
-      <w>108</w>
-      <h>45</h>
+      <x>707</x>
+      <y>343</y>
+      <w>84</w>
+      <h>35</h>
     </coordinates>
     <panel_attributes>GameRoom
 bg=blue
@@ -150,10 +136,10 @@ layer=-1</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>990</x>
-      <y>441</y>
-      <w>108</w>
-      <h>54</h>
+      <x>707</x>
+      <y>266</y>
+      <w>84</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>GameSession
 bg=blue
@@ -163,10 +149,10 @@ layer=-1</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1026</x>
-      <y>576</y>
-      <w>36</w>
-      <h>72</h>
+      <x>735</x>
+      <y>371</y>
+      <w>28</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m2=n
@@ -176,10 +162,10 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1026</x>
-      <y>486</y>
-      <w>36</w>
-      <h>72</h>
+      <x>735</x>
+      <y>301</y>
+      <w>28</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m2=n
@@ -189,10 +175,10 @@ fg=blue</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>621</x>
-      <y>297</y>
-      <w>90</w>
-      <h>81</h>
+      <x>420</x>
+      <y>224</y>
+      <w>70</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>Synchronizer
 bg=light_gray
@@ -203,10 +189,10 @@ layer=-1</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>621</x>
-      <y>477</y>
-      <w>90</w>
-      <h>54</h>
+      <x>420</x>
+      <y>364</y>
+      <w>70</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>Event
 --
@@ -219,10 +205,10 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>657</x>
-      <y>369</y>
-      <w>63</w>
-      <h>126</h>
+      <x>448</x>
+      <y>280</y>
+      <w>49</w>
+      <h>98</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 &lt;map&gt;
@@ -233,10 +219,23 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>657</x>
-      <y>54</y>
-      <w>36</w>
-      <h>261</h>
+      <x>448</x>
+      <y>77</y>
+      <w>28</w>
+      <h>161</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m2=1
+fg=blue</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;210.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>315</x>
+      <y>77</y>
+      <w>28</w>
+      <h>203</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m2=1
@@ -246,23 +245,10 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>486</x>
-      <y>54</y>
-      <w>36</w>
-      <h>315</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
-m2=1
-fg=blue</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;330.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>900</x>
-      <y>675</y>
-      <w>117</w>
-      <h>27</h>
+      <x>637</x>
+      <y>448</y>
+      <w>91</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=&lt;..
 fg=red</panel_attributes>
@@ -271,10 +257,10 @@ fg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>306</x>
-      <y>306</y>
-      <w>288</w>
-      <h>99</h>
+      <x>175</x>
+      <y>231</y>
+      <w>224</w>
+      <h>77</h>
     </coordinates>
     <panel_attributes>lt=&lt;..
 fg=red</panel_attributes>
@@ -283,34 +269,34 @@ fg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>819</x>
-      <y>351</y>
-      <w>90</w>
-      <h>351</h>
+      <x>574</x>
+      <y>266</y>
+      <w>70</w>
+      <h>203</h>
     </coordinates>
     <panel_attributes>lt=&lt;..
 fg=red</panel_attributes>
-    <additional_attributes>80.0;370.0;30.0;370.0;30.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>80.0;270.0;30.0;270.0;30.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>819</x>
-      <y>324</y>
-      <w>99</w>
-      <h>342</h>
+      <x>574</x>
+      <y>245</y>
+      <w>77</w>
+      <h>196</h>
     </coordinates>
     <panel_attributes>lt=&lt;..
 fg=red</panel_attributes>
-    <additional_attributes>10.0;10.0;90.0;10.0;90.0;360.0</additional_attributes>
+    <additional_attributes>10.0;10.0;90.0;10.0;90.0;260.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>306</x>
-      <y>288</y>
-      <w>369</w>
-      <h>63</h>
+      <x>175</x>
+      <y>217</y>
+      <w>287</w>
+      <h>49</h>
     </coordinates>
     <panel_attributes>lt=&lt;..
 fg=red</panel_attributes>
@@ -319,10 +305,10 @@ fg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>495</x>
-      <y>378</y>
-      <w>144</w>
-      <h>153</h>
+      <x>322</x>
+      <y>287</y>
+      <w>112</w>
+      <h>119</h>
     </coordinates>
     <panel_attributes>lt=&lt;..
 fg=red</panel_attributes>
@@ -331,10 +317,10 @@ fg=red</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>486</x>
-      <y>378</y>
-      <w>18</w>
-      <h>18</h>
+      <x>315</x>
+      <y>287</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>fg=red
 bg=red</panel_attributes>
@@ -343,10 +329,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>657</x>
-      <y>351</y>
-      <w>18</w>
-      <h>18</h>
+      <x>448</x>
+      <y>266</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>fg=red
 bg=red</panel_attributes>
@@ -355,10 +341,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>657</x>
-      <y>324</y>
-      <w>18</w>
-      <h>18</h>
+      <x>448</x>
+      <y>245</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>fg=red
 bg=red</panel_attributes>
@@ -367,10 +353,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>585</x>
-      <y>324</y>
-      <w>90</w>
-      <h>180</h>
+      <x>392</x>
+      <y>245</y>
+      <w>70</w>
+      <h>140</h>
     </coordinates>
     <panel_attributes>lt=&lt;..
 fg=red</panel_attributes>
@@ -379,10 +365,10 @@ fg=red</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>999</x>
-      <y>675</y>
-      <w>18</w>
-      <h>18</h>
+      <x>714</x>
+      <y>448</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>fg=red
 bg=red</panel_attributes>
@@ -391,10 +377,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>828</x>
-      <y>630</y>
-      <w>117</w>
-      <h>81</h>
+      <x>581</x>
+      <y>413</y>
+      <w>91</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>GameServer
 bg=blue
@@ -404,10 +390,10 @@ layer=-1</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>999</x>
-      <y>558</y>
-      <w>18</w>
-      <h>18</h>
+      <x>714</x>
+      <y>357</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>fg=red
 bg=red
@@ -417,10 +403,10 @@ layer=1</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>999</x>
-      <y>459</y>
-      <w>18</w>
-      <h>18</h>
+      <x>714</x>
+      <y>280</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>fg=red
 bg=red</panel_attributes>
@@ -429,10 +415,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>999</x>
-      <y>567</y>
-      <w>27</w>
-      <h>126</h>
+      <x>714</x>
+      <y>364</y>
+      <w>21</w>
+      <h>98</h>
     </coordinates>
     <panel_attributes>lt=&lt;..
 fg=red</panel_attributes>
@@ -441,10 +427,10 @@ fg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>999</x>
-      <y>468</y>
-      <w>27</w>
-      <h>108</h>
+      <x>714</x>
+      <y>287</y>
+      <w>21</w>
+      <h>84</h>
     </coordinates>
     <panel_attributes>lt=&lt;..
 fg=red</panel_attributes>
@@ -453,10 +439,10 @@ fg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>900</x>
-      <y>459</y>
-      <w>117</w>
-      <h>216</h>
+      <x>637</x>
+      <y>280</y>
+      <w>91</w>
+      <h>168</h>
     </coordinates>
     <panel_attributes>lt=&lt;..
 fg=red</panel_attributes>
@@ -465,10 +451,10 @@ fg=red</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>891</x>
-      <y>648</y>
-      <w>18</w>
-      <h>18</h>
+      <x>630</x>
+      <y>427</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>fg=red
 bg=red</panel_attributes>
@@ -477,10 +463,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>891</x>
-      <y>675</y>
-      <w>18</w>
-      <h>18</h>
+      <x>630</x>
+      <y>448</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>fg=red
 bg=red</panel_attributes>
@@ -489,10 +475,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>747</x>
-      <y>297</y>
-      <w>117</w>
-      <h>81</h>
+      <x>518</x>
+      <y>224</y>
+      <w>91</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>GameClient
 bg=light_gray
@@ -502,10 +488,10 @@ fg=blue</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>810</x>
-      <y>324</y>
-      <w>18</w>
-      <h>18</h>
+      <x>567</x>
+      <y>245</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>fg=red
 bg=red</panel_attributes>
@@ -514,10 +500,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>810</x>
-      <y>351</y>
-      <w>18</w>
-      <h>18</h>
+      <x>567</x>
+      <y>266</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>fg=red
 bg=red</panel_attributes>
@@ -526,10 +512,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>666</x>
-      <y>351</y>
-      <w>162</w>
-      <h>27</h>
+      <x>455</x>
+      <y>266</y>
+      <w>126</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=&lt;..
 fg=red</panel_attributes>
@@ -538,10 +524,10 @@ fg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>666</x>
-      <y>324</y>
-      <w>162</w>
-      <h>27</h>
+      <x>455</x>
+      <y>245</y>
+      <w>126</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=&lt;..
 fg=red</panel_attributes>
