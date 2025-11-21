@@ -1,11 +1,15 @@
 // http://localhost:3000/boardgame/index.html
 // ################################################################################################
 namespace reco.boardgame {
+    // ============================================================================================    
+    const fontFamily = 'Times New Roman';
+    const fontSize = "12";
+    const fontWeight = "normal";
+    const letterSpacing = "1px";
     // ============================================================================================
     export class Session {
         // ----------------------------------------------------------------------------------------
         board: Board;
-        // privateBoard : Board;
         listener: Listener;
         synchronizer: Synchronizer;
         // ----------------------------------------------------------------------------------------
@@ -41,12 +45,25 @@ namespace reco.boardgame {
             this.svgElt.insertBefore(rect, this.svgElt.firstChild);
         }
         // ----------------------------------------------------------------------------------------
-        addItem(): Item {
+        get boundingRect(): DOMRect { return this.svgElt.getBoundingClientRect(); }
+        get centerX(): number { return this.boundingRect.width / 2; }
+        get centerY(): number { return this.boundingRect.height / 2; }
+        get width(): number { return this.boundingRect.width; }
+        get height(): number { return this.boundingRect.width; }
+        // ----------------------------------------------------------------------------------------
+        addItem(builder: ItemBuilder): Item {
             let item = new Item(this);
             this.items.push(item);
+            builder.build(item);
             this.svgElt.appendChild(item.svgGroup);
             return item;
         }
+        // ----------------------------------------------------------------------------------------
+    }
+    // ============================================================================================
+    export interface ItemBuilder {
+        // ----------------------------------------------------------------------------------------
+        build(item: Item): void;
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
@@ -58,61 +75,118 @@ namespace reco.boardgame {
         constructor(board: Board) {
             this.board = board;
             this.svgGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-
-            // const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-            // image.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', 'path/to/image.png');
-            // image.setAttribute('x', '0');
-            // image.setAttribute('y', '0');
-            // image.setAttribute('width', '100');
-            // image.setAttribute('height', '100');
-            // this.svgGroup.appendChild(image);
         }
         // ----------------------------------------------------------------------------------------
+        get boundingClientRect(): DOMRect { return this.svgGroup.getBoundingClientRect(); }
+        get lastElt(): SVGElement | null {
+            let len = this.svgGroup.children.length;
+            if (len === 0) return null;
+            return this.svgGroup.children.item(len - 1) as SVGElement;
+        }
+        get lastEltBoundingClientRect(): DOMRect | null {
+            let lastElt = this.lastElt;
+            return lastElt ? lastElt.getBoundingClientRect() : null;
+        }
+        get lastEltX(): number {
+            let lastElt = this.lastElt;
+            if (!lastElt) return 0;
+            return this.lastEltBoundingClientRect!.x - this.boundingClientRect.x;
+        }
+        get lastEltY(): number {
+            let lastElt = this.lastElt;
+            if (!lastElt) return 0;
+            return this.lastEltBoundingClientRect!.y - this.boundingClientRect.y;
+        }
+        get lastEltHeight(): number {
+            let lastElt = this.lastElt;
+            if (!lastElt) return 0;
+            return this.lastEltBoundingClientRect!.height;
+        }
+        get lastEltWidth(): number {
+            let lastElt = this.lastElt;
+            if (!lastElt) return 0;
+            return this.lastEltBoundingClientRect!.width;
+        }
         // ----------------------------------------------------------------------------------------
+        addImage(href: string, width: number, height: number, x: number = Number.NaN, y: number = Number.NaN) {
+            x = isNaN(x) ? 0 : x;
+            y = isNaN(y) ? (this.lastEltY + this.lastEltHeight) : y;
+            const svgImage = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+            svgImage.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', href);
+            svgImage.setAttribute('x', '' + x);
+            svgImage.setAttribute('y', '' + y);
+            svgImage.setAttribute('width', '' + width);
+            svgImage.setAttribute('height', '' + height);
+            this.svgGroup.appendChild(svgImage);
+        }
+        // ----------------------------------------------------------------------------------------
+        addText(text: string, x: number = Number.NaN, y: number = Number.NaN) {
+            x = isNaN(x) ? 0 : x;
+            y = isNaN(y) ? (this.lastEltY + this.lastEltHeight) : y;
+            const svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            svgText.setAttribute("x", "" + x);
+            svgText.setAttribute("y", "" + y);
+            svgText.setAttribute('font-family', fontFamily);
+            svgText.setAttribute('font-size', fontSize);
+            svgText.setAttribute('font-weight', fontWeight);
+            svgText.setAttribute('letter-spacing', letterSpacing);
+            svgText.textContent = text;
+            this.svgGroup.appendChild(svgText);
+        }
     }
     // ============================================================================================
     export class Listener {
         // ----------------------------------------------------------------------------------------
         session: Session;
+        moving: boolean = false;
         // ----------------------------------------------------------------------------------------
         constructor(session: Session) {
             let THIS = this;
             this.session = session;
             window.addEventListener("mousedown", (evt) => {
-                THIS.onMoveStart(evt.target!, evt.offsetX, evt.offsetY);
+                THIS.onMoveStart(evt.target!, evt.clientX, evt.clientY);
             });
             window.addEventListener("mousemove", (evt) => {
-                this.onmove(evt.offsetX, evt.offsetY);
+                if (THIS.moving) THIS.onMove(evt.clientX, evt.clientY);
             });
             window.addEventListener("mouseup", (evt) => {
-                this.onup();
+                if (THIS.moving) THIS.onMoveEnd();
             });
             window.addEventListener("touchstart", (evt) => {
-                evt.preventDefault();
-                evt.stopPropagation();
-                const touch = evt.touches[0];
-                this.ondown(evt.target!, touch.clientX, touch.clientY);
+                if (evt.touches.length === 1) {
+                    const touch = evt.touches[0];
+                    THIS.onMoveStart(evt.target!, touch.clientX, touch.clientY);
+                }
             });
             window.addEventListener("touchmove", (evt) => {
-                evt.preventDefault();
-                evt.stopPropagation();
-                const touch = evt.touches[0];
-                const rect = (evt.target as HTMLElement).getBoundingClientRect();
-                this.onmove(touch.clientX, touch.clientY);
+                if (THIS.moving) {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    const touch = evt.touches[0];
+                    THIS.onMove(touch.clientX, touch.clientY);
+                }
             });
             window.addEventListener("touchend", (evt) => {
-                evt.preventDefault();
-                evt.stopPropagation();
-                this.onup();
+                if (THIS.moving) {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    THIS.onMoveEnd();
+                }
             });
 
         }
         // ----------------------------------------------------------------------------------------
-        onMoveStart() { }
+        onMoveStart(target: EventTarget, x: number, y: number) {
+
+        }
         // ----------------------------------------------------------------------------------------
-        onMove() { }
+        onMove(x: number, y: number) {
+
+        }
         // ----------------------------------------------------------------------------------------
-        onMoveEmd() { }
+        onMoveEnd() {
+
+        }
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
