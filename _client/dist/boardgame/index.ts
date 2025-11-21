@@ -51,10 +51,10 @@ namespace reco.boardgame {
         get width(): number { return this.boundingRect.width; }
         get height(): number { return this.boundingRect.width; }
         // ----------------------------------------------------------------------------------------
-        addItem(builder: ItemBuilder): Item {
+        addItem(builder?: ItemBuilder | null): Item {
             let item = new Item(this);
             this.items.push(item);
-            builder.build(item);
+            if (builder) builder.build(item);
             this.svgElt.appendChild(item.svgGroup);
             return item;
         }
@@ -75,37 +75,39 @@ namespace reco.boardgame {
         constructor(board: Board) {
             this.board = board;
             this.svgGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            this.svgGroup.setAttribute("transform", "translate(" + this.board.centerX + ", " + this.board.centerY + ")");
         }
         // ----------------------------------------------------------------------------------------
         get boundingClientRect(): DOMRect { return this.svgGroup.getBoundingClientRect(); }
-        get lastElt(): SVGElement | null {
+        get lastElt(): SVGGraphicsElement | null {
             let len = this.svgGroup.children.length;
             if (len === 0) return null;
-            return this.svgGroup.children.item(len - 1) as SVGElement;
+            return this.svgGroup.children.item(len - 1) as SVGGraphicsElement;
         }
-        get lastEltBoundingClientRect(): DOMRect | null {
+        get lastEltBBox(): DOMRect | null {
             let lastElt = this.lastElt;
-            return lastElt ? lastElt.getBoundingClientRect() : null;
+            if (!lastElt) return null;
+            return lastElt.getBBox();
         }
         get lastEltX(): number {
             let lastElt = this.lastElt;
             if (!lastElt) return 0;
-            return this.lastEltBoundingClientRect!.x - this.boundingClientRect.x;
+            return this.lastEltBBox!.x;
         }
         get lastEltY(): number {
             let lastElt = this.lastElt;
             if (!lastElt) return 0;
-            return this.lastEltBoundingClientRect!.y - this.boundingClientRect.y;
+            return this.lastEltBBox!.y;
         }
         get lastEltHeight(): number {
             let lastElt = this.lastElt;
             if (!lastElt) return 0;
-            return this.lastEltBoundingClientRect!.height;
+            return this.lastEltBBox!.height;
         }
         get lastEltWidth(): number {
             let lastElt = this.lastElt;
             if (!lastElt) return 0;
-            return this.lastEltBoundingClientRect!.width;
+            return this.lastEltBBox!.width;
         }
         // ----------------------------------------------------------------------------------------
         addImage(href: string, width: number, height: number, x: number = Number.NaN, y: number = Number.NaN) {
@@ -139,6 +141,7 @@ namespace reco.boardgame {
         // ----------------------------------------------------------------------------------------
         session: Session;
         moving: boolean = false;
+        drag: { evX0: number, evY0: number, itemX0: number, itemY0: number, item: Item } | null = null
         // ----------------------------------------------------------------------------------------
         constructor(session: Session) {
             let THIS = this;
@@ -177,7 +180,17 @@ namespace reco.boardgame {
         }
         // ----------------------------------------------------------------------------------------
         onMoveStart(target: EventTarget, x: number, y: number) {
-
+            let targetParent = (target as SVGElement).parentNode as SVGGElement
+            if (this.childrenGroupElements.indexOf(targetParent) !== -1) {
+                const group = this.childrenGroupsById[targetParent.id];
+                this.drag = {
+                    "group": group,
+                    "evX0": offsetX,
+                    "evY0": offsetY,
+                    "groupX0": group.x,
+                    "groupY0": group.y
+                };
+            }
         }
         // ----------------------------------------------------------------------------------------
         onMove(x: number, y: number) {
@@ -218,7 +231,10 @@ namespace reco.boardgame {
     }
     // ============================================================================================
     console.log("Board Game");
-    new Session("commonBoard");
+    let session = new Session("commonBoard");
+    let item = session.board.addItem();
+    item.addText("Mario");
+    item.addImage("./images/mario.png", 50, 50);
     // ============================================================================================
 }
 // ################################################################################################
