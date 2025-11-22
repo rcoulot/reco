@@ -11,5 +11,9 @@
   },
   "include": [
     "./**/*.ts"
+  ],
+  "files": [
+    "utils.ts",
+    "index.ts"
   ]
 }

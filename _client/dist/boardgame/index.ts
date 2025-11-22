@@ -1,11 +1,6 @@
 // http://localhost:3000/boardgame/index.html
 // ################################################################################################
 namespace reco.boardgame {
-    // ============================================================================================    
-    const fontFamily = 'Times New Roman';
-    const fontSize = "12";
-    const fontWeight = "normal";
-    const letterSpacing = "1px";
     // ============================================================================================
     export class Session {
         // ----------------------------------------------------------------------------------------
@@ -20,7 +15,6 @@ namespace reco.boardgame {
             this.synchronizer = new Synchronizer(this);
         }
         // ----------------------------------------------------------------------------------------
-        // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
     export class Board {
@@ -28,35 +22,29 @@ namespace reco.boardgame {
         session: Session;
         boardDiv: HTMLDivElement;
         svgElt: SVGSVGElement;
-        items: Item[] = [];
+        itemList: Item[] = [];
+        itemDict: { [key: string]: Item } = {};
         // ----------------------------------------------------------------------------------------
         constructor(session: Session, boardDiv: HTMLDivElement) {
             this.session = session;
             this.boardDiv = boardDiv;
-            this.svgElt = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            this.svgElt.setAttribute("width", "100%");
-            this.svgElt.setAttribute("height", "100%");
-            this.boardDiv.appendChild(this.svgElt);
-
-            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            rect.setAttribute('width', '100%');
-            rect.setAttribute('height', '100%');
-            rect.setAttribute('fill', 'darkgray');
-            this.svgElt.insertBefore(rect, this.svgElt.firstChild);
+            this.svgElt = createSvgElement('svg', { 'width': '100%', 'height': '100%' }, this.boardDiv);
+            const rect = createSvgElement('rect', { 'width': '100%', 'height': '100%', 'fill': 'darkgray' }, this.svgElt, false);
         }
-        // ----------------------------------------------------------------------------------------
-        get boundingRect(): DOMRect { return this.svgElt.getBoundingClientRect(); }
-        get centerX(): number { return this.boundingRect.width / 2; }
-        get centerY(): number { return this.boundingRect.height / 2; }
-        get width(): number { return this.boundingRect.width; }
-        get height(): number { return this.boundingRect.width; }
         // ----------------------------------------------------------------------------------------
         addItem(builder?: ItemBuilder | null): Item {
             let item = new Item(this);
-            this.items.push(item);
+            this.itemList.push(item);
+            this.itemDict[item.id] = item;
             if (builder) builder.build(item);
-            this.svgElt.appendChild(item.svgGroup);
+            setAttributs(item.svgGroup, { "item-id": item.id }, true);
             return item;
+        }
+        // ----------------------------------------------------------------------------------------
+        itemForTarget(target: EventTarget): Item | null {
+            let itemId = target instanceof Element ? target.getAttribute("item-id") : null;
+            if (itemId && this.itemDict[itemId]) return this.itemDict[itemId];
+            return null;
         }
         // ----------------------------------------------------------------------------------------
     }
@@ -71,135 +59,44 @@ namespace reco.boardgame {
         // ----------------------------------------------------------------------------------------
         board: Board;
         svgGroup: SVGGElement;
+        id: string = randomUUID();
         // ---------------------------------- ------------------------------------------------------
         constructor(board: Board) {
             this.board = board;
-            this.svgGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            this.svgGroup.setAttribute("transform", "translate(" + this.board.centerX + ", " + this.board.centerY + ")");
-        }
-        // ----------------------------------------------------------------------------------------
-        get boundingClientRect(): DOMRect { return this.svgGroup.getBoundingClientRect(); }
-        get lastElt(): SVGGraphicsElement | null {
-            let len = this.svgGroup.children.length;
-            if (len === 0) return null;
-            return this.svgGroup.children.item(len - 1) as SVGGraphicsElement;
-        }
-        get lastEltBBox(): DOMRect | null {
-            let lastElt = this.lastElt;
-            if (!lastElt) return null;
-            return lastElt.getBBox();
-        }
-        get lastEltX(): number {
-            let lastElt = this.lastElt;
-            if (!lastElt) return 0;
-            return this.lastEltBBox!.x;
-        }
-        get lastEltY(): number {
-            let lastElt = this.lastElt;
-            if (!lastElt) return 0;
-            return this.lastEltBBox!.y;
-        }
-        get lastEltHeight(): number {
-            let lastElt = this.lastElt;
-            if (!lastElt) return 0;
-            return this.lastEltBBox!.height;
-        }
-        get lastEltWidth(): number {
-            let lastElt = this.lastElt;
-            if (!lastElt) return 0;
-            return this.lastEltBBox!.width;
+            this.svgGroup = svgTranslate(createSvgElement('g'), svgCenter(this.board.svgElt));
         }
         // ----------------------------------------------------------------------------------------
         addImage(href: string, width: number, height: number, x: number = Number.NaN, y: number = Number.NaN) {
+            let box = svgBox(svgLastElt(this.svgGroup)!);
             x = isNaN(x) ? 0 : x;
-            y = isNaN(y) ? (this.lastEltY + this.lastEltHeight) : y;
-            const svgImage = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-            svgImage.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', href);
-            svgImage.setAttribute('x', '' + x);
-            svgImage.setAttribute('y', '' + y);
-            svgImage.setAttribute('width', '' + width);
-            svgImage.setAttribute('height', '' + height);
-            this.svgGroup.appendChild(svgImage);
+            y = isNaN(y) ? (box.y + box.height) : y;
+            const svgImage = createSvgElement('image', { "x": "" + x, "y": "" + y, "width": "" + width, "height": "" + height }, this.svgGroup);
         }
         // ----------------------------------------------------------------------------------------
         addText(text: string, x: number = Number.NaN, y: number = Number.NaN) {
+            let box = svgBox(svgLastElt(this.svgGroup)!);
             x = isNaN(x) ? 0 : x;
-            y = isNaN(y) ? (this.lastEltY + this.lastEltHeight) : y;
-            const svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            svgText.setAttribute("x", "" + x);
-            svgText.setAttribute("y", "" + y);
-            svgText.setAttribute('font-family', fontFamily);
-            svgText.setAttribute('font-size', fontSize);
-            svgText.setAttribute('font-weight', fontWeight);
-            svgText.setAttribute('letter-spacing', letterSpacing);
+            y = isNaN(y) ? (box.y + box.height) : y;
+            const svgText = createSvgElement('text', { "x": "" + x, "y": "" + y, "font-family": fontFamily, "font-size": fontSize, "font-weight": fontWeight, "letter-spacing": letterSpacing }, this.svgGroup);
             svgText.textContent = text;
-            this.svgGroup.appendChild(svgText);
         }
     }
     // ============================================================================================
-    export class Listener {
+    export class Listener implements MovableNotifier {
         // ----------------------------------------------------------------------------------------
         session: Session;
-        moving: boolean = false;
-        drag: { evX0: number, evY0: number, itemX0: number, itemY0: number, item: Item } | null = null
+        movableInfo: MovableNotifierInfo;
         // ----------------------------------------------------------------------------------------
         constructor(session: Session) {
-            let THIS = this;
             this.session = session;
-            window.addEventListener("mousedown", (evt) => {
-                THIS.onMoveStart(evt.target!, evt.clientX, evt.clientY);
-            });
-            window.addEventListener("mousemove", (evt) => {
-                if (THIS.moving) THIS.onMove(evt.clientX, evt.clientY);
-            });
-            window.addEventListener("mouseup", (evt) => {
-                if (THIS.moving) THIS.onMoveEnd();
-            });
-            window.addEventListener("touchstart", (evt) => {
-                if (evt.touches.length === 1) {
-                    const touch = evt.touches[0];
-                    THIS.onMoveStart(evt.target!, touch.clientX, touch.clientY);
-                }
-            });
-            window.addEventListener("touchmove", (evt) => {
-                if (THIS.moving) {
-                    evt.preventDefault();
-                    evt.stopPropagation();
-                    const touch = evt.touches[0];
-                    THIS.onMove(touch.clientX, touch.clientY);
-                }
-            });
-            window.addEventListener("touchend", (evt) => {
-                if (THIS.moving) {
-                    evt.preventDefault();
-                    evt.stopPropagation();
-                    THIS.onMoveEnd();
-                }
-            });
-
+            this.movableInfo = new MovableNotifierInfo(this);
         }
         // ----------------------------------------------------------------------------------------
-        onMoveStart(target: EventTarget, x: number, y: number) {
-            let targetParent = (target as SVGElement).parentNode as SVGGElement
-            if (this.childrenGroupElements.indexOf(targetParent) !== -1) {
-                const group = this.childrenGroupsById[targetParent.id];
-                this.drag = {
-                    "group": group,
-                    "evX0": offsetX,
-                    "evY0": offsetY,
-                    "groupX0": group.x,
-                    "groupY0": group.y
-                };
-            }
-        }
+        onMoveStart(target: EventTarget, x: number, y: number) { }
         // ----------------------------------------------------------------------------------------
-        onMove(x: number, y: number) {
-
-        }
+        onMove(x: number, y: number) { }
         // ----------------------------------------------------------------------------------------
-        onMoveEnd() {
-
-        }
+        onMoveEnd() { }
         // ----------------------------------------------------------------------------------------
     }
     // ============================================================================================
