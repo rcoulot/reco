@@ -63,14 +63,14 @@ namespace reco.boardgame {
         // ---------------------------------- ------------------------------------------------------
         constructor(board: Board) {
             this.board = board;
-            this.svgGroup = svgTranslate(createSvgElement('g'), svgCenter(this.board.svgElt));
+            this.svgGroup = svgTranslate(createSvgElement('g', {}, this.board.svgElt), svgCenter(this.board.svgElt));
         }
         // ----------------------------------------------------------------------------------------
         addImage(href: string, width: number, height: number, x: number = Number.NaN, y: number = Number.NaN) {
             let box = svgBox(svgLastElt(this.svgGroup)!);
             x = isNaN(x) ? 0 : x;
             y = isNaN(y) ? (box.y + box.height) : y;
-            const svgImage = createSvgElement('image', { "x": "" + x, "y": "" + y, "width": "" + width, "height": "" + height }, this.svgGroup);
+            const svgImage = createSvgElement('image', { "x": "" + x, "y": "" + y, "width": "" + width, "height": "" + height,"href": href }, this.svgGroup);
         }
         // ----------------------------------------------------------------------------------------
         addText(text: string, x: number = Number.NaN, y: number = Number.NaN) {

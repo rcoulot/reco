@@ -116,17 +116,17 @@ namespace reco.boardgame {
         // ----------------------------------------------------------------------------------------
         onMoveStart(target: EventTarget, x: number, y: number) {
             this.notifier.onMoveStart(target, x, y);
-            let targetParent = (target as SVGElement).parentNode as SVGGElement
-            if (this.childrenGroupElements.indexOf(targetParent) !== -1) {
-                const group = this.childrenGroupsById[targetParent.id];
-                this.drag = {
-                    "group": group,
-                    "evX0": offsetX,
-                    "evY0": offsetY,
-                    "groupX0": group.x,
-                    "groupY0": group.y
-                };
-            }
+            // let targetParent = (target as SVGElement).parentNode as SVGGElement
+            // if (this.childrenGroupElements.indexOf(targetParent) !== -1) {
+            //     const group = this.childrenGroupsById[targetParent.id];
+            //     this.drag = {
+            //         "group": group,
+            //         "evX0": offsetX,
+            //         "evY0": offsetY,
+            //         "groupX0": group.x,
+            //         "groupY0": group.y
+            //     };
+            // }
         }
         // ----------------------------------------------------------------------------------------
         onMove(x: number, y: number) {
