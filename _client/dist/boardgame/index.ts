@@ -32,8 +32,8 @@ namespace reco.boardgame {
             const rect = createSvgElement('rect', { 'width': '100%', 'height': '100%', 'fill': 'darkgray' }, this.svgElt, false);
         }
         // ----------------------------------------------------------------------------------------
-        addItem(builder?: ItemBuilder | null): Item {
-            let item = new Item(this);
+        addItem(position: Position = svgCenter(this.svgElt), builder?: ItemBuilder | null): Item {
+            let item = new Item(this, position);
             this.itemList.push(item);
             this.itemDict[item.id] = item;
             if (builder) builder.build(item);
@@ -152,9 +152,17 @@ namespace reco.boardgame {
     // ============================================================================================
     console.log("Board Game");
     let session = new Session("commonBoard");
-    let item = session.board.addItem();
-    item.addText("Mario");
-    item.addImage("./images/mario.png", { width: 50, height: 50 });
+    let center: Position = svgCenter(session.board.svgElt);
+    {
+        let item = session.board.addItem(pointTranslate(center, { width: -100, height: -25 }));
+        item.addText("Mario 1");
+        item.addImage("./images/mario.png", { width: 50, height: 50 });
+    }
+    {
+        let item = session.board.addItem(pointTranslate(center, { width: 100, height: -25 }));
+        item.addText("Mario 2");
+        item.addImage("./images/mario.png", { width: 50, height: 50 });
+    }
     // ============================================================================================
 }
 // ################################################################################################

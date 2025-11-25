@@ -65,6 +65,9 @@ namespace reco.boardgame {
     // ============================================================================================
     export type Size = { width: number, height: number };
     export type Position = { x: number, y: number };
+    export const pointTranslate = function (point: Position, move: Size): Position {
+        return { x: point.x + move.width, y: point.y + move.height };
+    }
     export interface MovableNotifier {
         movableInfo: MovableNotifierInfo;
         onMoveStart(target: EventTarget, x: number, y: number): Item | null;
