@@ -60,25 +60,46 @@ namespace reco.boardgame {
         board: Board;
         svgGroup: SVGGElement;
         id: string = randomUUID();
-        // ---------------------------------- ------------------------------------------------------
-        constructor(board: Board) {
+        position: Position = { x: 0, y: 0 };
+        // ----------------------------------------------------------------------------------------
+        constructor(board: Board, position: Position = svgCenter(board.svgElt)) {
             this.board = board;
-            this.svgGroup = svgTranslate(createSvgElement('g', {}, this.board.svgElt), svgCenter(this.board.svgElt));
+            this.svgGroup = createSvgElement('g', {}, this.board.svgElt);
+            this.moveTo(position);
         }
         // ----------------------------------------------------------------------------------------
-        addImage(href: string, width: number, height: number, x: number = Number.NaN, y: number = Number.NaN) {
+        addImage(href: string, size: Size, internalPosition: Position = { x: Number.NaN, y: Number.NaN }) {
             let box = svgBox(svgLastElt(this.svgGroup)!);
-            x = isNaN(x) ? 0 : x;
-            y = isNaN(y) ? (box.y + box.height) : y;
-            const svgImage = createSvgElement('image', { "x": "" + x, "y": "" + y, "width": "" + width, "height": "" + height,"href": href }, this.svgGroup);
+            if (isNaN(internalPosition.x)) {
+                internalPosition.x = 0;
+                internalPosition.y = box.y + box.height;
+            }
+            const svgImage = createSvgElement('image', {
+                "x": "" + internalPosition.x, "y": "" + internalPosition.y,
+                "width": "" + size.width, "height": "" + size.height,
+                "href": href,
+                "item-id": this.id
+            }, this.svgGroup);
         }
         // ----------------------------------------------------------------------------------------
-        addText(text: string, x: number = Number.NaN, y: number = Number.NaN) {
+        addText(text: string, internalPosition: Position = { x: Number.NaN, y: Number.NaN }) {
             let box = svgBox(svgLastElt(this.svgGroup)!);
-            x = isNaN(x) ? 0 : x;
-            y = isNaN(y) ? (box.y + box.height) : y;
-            const svgText = createSvgElement('text', { "x": "" + x, "y": "" + y, "font-family": fontFamily, "font-size": fontSize, "font-weight": fontWeight, "letter-spacing": letterSpacing }, this.svgGroup);
+            if (isNaN(internalPosition.x)) {
+                internalPosition.x = 0;
+                internalPosition.y = box.y + box.height;
+            }
+            const svgText = createSvgElement('text', {
+                "x": "" + internalPosition.x, "y": "" + internalPosition.y,
+                "font-family": fontFamily, "font-size": fontSize,
+                "font-weight": fontWeight, "letter-spacing": letterSpacing,
+                "item-id": this.id
+            }, this.svgGroup);
             svgText.textContent = text;
+        }
+        // ----------------------------------------------------------------------------------------
+        moveTo(position: Position) {
+            this.position = position;
+            this.svgGroup = svgTranslate(this.svgGroup, this.position);
         }
     }
     // ============================================================================================
@@ -92,7 +113,9 @@ namespace reco.boardgame {
             this.movableInfo = new MovableNotifierInfo(this);
         }
         // ----------------------------------------------------------------------------------------
-        onMoveStart(target: EventTarget, x: number, y: number) { }
+        onMoveStart(target: EventTarget, x: number, y: number): Item | null {
+            return this.session.board.itemForTarget(target);
+        }
         // ----------------------------------------------------------------------------------------
         onMove(x: number, y: number) { }
         // ----------------------------------------------------------------------------------------
@@ -131,7 +154,7 @@ namespace reco.boardgame {
     let session = new Session("commonBoard");
     let item = session.board.addItem();
     item.addText("Mario");
-    item.addImage("./images/mario.png", 50, 50);
+    item.addImage("./images/mario.png", { width: 50, height: 50 });
     // ============================================================================================
 }
 // ################################################################################################

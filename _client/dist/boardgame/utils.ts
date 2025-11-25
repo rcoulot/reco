@@ -63,9 +63,11 @@ namespace reco.boardgame {
         return svgElt;
     }
     // ============================================================================================
+    export type Size = { width: number, height: number };
+    export type Position = { x: number, y: number };
     export interface MovableNotifier {
         movableInfo: MovableNotifierInfo;
-        onMoveStart(target: EventTarget, x: number, y: number): void;
+        onMoveStart(target: EventTarget, x: number, y: number): Item | null;
         onMove(x: number, y: number): void;
         onMoveEnd(): void;
     }
@@ -73,68 +75,78 @@ namespace reco.boardgame {
     export class MovableNotifierInfo {
         // ----------------------------------------------------------------------------------------
         notifier: MovableNotifier;
-        moving: boolean = false;
-        evX0: number = Number.NaN;
-        evY0: number = Number.NaN;
-        itemX0: number = Number.NaN;
-        itemY0: number = Number.NaN;
+        ev0Position: Position = { x: Number.NaN, y: Number.NaN };
+        item0Position: Position = { x: Number.NaN, y: Number.NaN };
         item: Item | null = null;
+        get moving(): boolean { return this.item !== null; }
         // ----------------------------------------------------------------------------------------
         constructor(notifier: MovableNotifier) {
+            let THIS = this;
             this.notifier = notifier;
             window.addEventListener("mousedown", (evt) => {
-                notifier.onMoveStart(evt.target!, evt.clientX, evt.clientY);
+                THIS.onMoveStart(evt.target!, evt.clientX, evt.clientY);
             });
             window.addEventListener("mousemove", (evt) => {
-                if (notifier.movableInfo.moving) notifier.onMove(evt.clientX, evt.clientY);
-            });
+                if (THIS.moving) THIS.onMove(evt.clientX, evt.clientY);
+            }, { passive: false });
             window.addEventListener("mouseup", (evt) => {
-                if (notifier.movableInfo.moving) notifier.onMoveEnd();
-            });
+                THIS.onMoveEnd();
+            }, { passive: false });
             window.addEventListener("touchstart", (evt) => {
                 if (evt.touches.length === 1) {
                     const touch = evt.touches[0];
-                    notifier.onMoveStart(evt.target!, touch.clientX, touch.clientY);
+                    THIS.onMoveStart(evt.target!, touch.clientX, touch.clientY);
                 }
-            });
+                evt.preventDefault();
+                // evt.stopPropagation();
+            }, { passive: false });
             window.addEventListener("touchmove", (evt) => {
-                if (notifier.movableInfo.moving) {
-                    evt.preventDefault();
-                    evt.stopPropagation();
+                if (THIS.moving) {
                     const touch = evt.touches[0];
-                    notifier.onMove(touch.clientX, touch.clientY);
+                    THIS.onMove(touch.clientX, touch.clientY);
                 }
+                // evt.preventDefault();
+                // evt.stopPropagation();
+            }, { passive: false });
+            window.addEventListener("touchcancel", (evt) => {
+                // evt.preventDefault();
+                // evt.stopPropagation();
+                THIS.onMoveEnd();
             });
             window.addEventListener("touchend", (evt) => {
-                if (notifier.movableInfo.moving) {
-                    evt.preventDefault();
-                    evt.stopPropagation();
-                    notifier.onMoveEnd();
-                }
+                // evt.preventDefault();
+                // evt.stopPropagation();
+                THIS.onMoveEnd();
             });
         }
         // ----------------------------------------------------------------------------------------
         onMoveStart(target: EventTarget, x: number, y: number) {
-            this.notifier.onMoveStart(target, x, y);
-            // let targetParent = (target as SVGElement).parentNode as SVGGElement
-            // if (this.childrenGroupElements.indexOf(targetParent) !== -1) {
-            //     const group = this.childrenGroupsById[targetParent.id];
-            //     this.drag = {
-            //         "group": group,
-            //         "evX0": offsetX,
-            //         "evY0": offsetY,
-            //         "groupX0": group.x,
-            //         "groupY0": group.y
-            //     };
-            // }
+            this.item = this.notifier.onMoveStart(target, x, y);
+            if (this.item) {
+                console.log("Move start item " + this.item.id);
+                this.ev0Position = { x: x, y: y };
+                this.item0Position = { x: this.item.position.x, y: this.item.position.y };
+            }
         }
         // ----------------------------------------------------------------------------------------
         onMove(x: number, y: number) {
-            this.notifier.onMove(x, y);
+            if (this.item) {
+                this.notifier.onMove(x, y);
+                this.item.moveTo({
+                    x: this.item0Position.x + (x - this.ev0Position.x),
+                    y: this.item0Position.y + (y - this.ev0Position.y)
+                });
+            }
         }
         // ----------------------------------------------------------------------------------------
         onMoveEnd() {
-            this.notifier.onMoveEnd();
+            if (this.item) {
+                console.log("Move end item " + this.item.id);
+                this.notifier.onMoveEnd();
+                this.item = null;
+                this.ev0Position = { x: Number.NaN, y: Number.NaN };
+                this.item0Position = { x: Number.NaN, y: Number.NaN };
+            }
         }
         // ----------------------------------------------------------------------------------------
     }
