@@ -6,7 +6,7 @@ namespace reco.boardgame {
     export const fontWeight = "normal";
     export const letterSpacing = "1px";
     // ============================================================================================
-    export const randomUUID = function (): string {
+    export const uuid = function (): string {
         let uuid = '';
         for (let i = 0; i < 36; i++) {
             if (i === 8 || i === 13 || i === 18 || i === 23) {
@@ -70,8 +70,8 @@ namespace reco.boardgame {
     }
     export interface MovableNotifier {
         movableInfo: MovableNotifierInfo;
-        onMoveStart(target: EventTarget, x: number, y: number): Item | null;
-        onMove(x: number, y: number): void;
+        onMoveStart(target: EventTarget, position: Position): Item | null;
+        onMove(position: Position): void;
         onMoveEnd(): void;
     }
     // ============================================================================================
@@ -124,21 +124,23 @@ namespace reco.boardgame {
         }
         // ----------------------------------------------------------------------------------------
         onMoveStart(target: EventTarget, x: number, y: number) {
-            this.item = this.notifier.onMoveStart(target, x, y);
+            let position = { x: x, y: y };
+            this.item = this.notifier.onMoveStart(target, position);
             if (this.item) {
                 console.log("Move start item " + this.item.id);
-                this.ev0Position = { x: x, y: y };
+                this.ev0Position = position;
                 this.item0Position = { x: this.item.position.x, y: this.item.position.y };
             }
         }
         // ----------------------------------------------------------------------------------------
         onMove(x: number, y: number) {
             if (this.item) {
-                this.notifier.onMove(x, y);
-                this.item.moveTo({
+                let position = {
                     x: this.item0Position.x + (x - this.ev0Position.x),
                     y: this.item0Position.y + (y - this.ev0Position.y)
-                });
+                }
+                this.item.moveTo(position);
+                this.notifier.onMove(position);
             }
         }
         // ----------------------------------------------------------------------------------------
