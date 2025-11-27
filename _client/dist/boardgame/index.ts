@@ -13,7 +13,6 @@ namespace reco.boardgame {
             let boardDiv = document.getElementById(commonBoardDivId) as HTMLDivElement;
             this.board = new Board(this, boardDiv);
             if (active) new Listener(this);
-            else this.board.svgElt.setAttribute("transform", `rotate(180)`);
             this.synchronizer = new Synchronizer(this);
         }
         // ----------------------------------------------------------------------------------------
@@ -26,12 +25,14 @@ namespace reco.boardgame {
         svgElt: SVGSVGElement;
         itemList: Item[] = [];
         itemDict: { [key: string]: Item } = {};
+        get width(): number { return this.boardDiv.offsetWidth; }
+        get height(): number { return this.boardDiv.offsetHeight; }
+        get center(): Position { return { x: this.width / 2, y: this.height / 2 }; }
         // ----------------------------------------------------------------------------------------
         constructor(session: Session, boardDiv: HTMLDivElement) {
             this.session = session;
             this.boardDiv = boardDiv;
             this.svgElt = createSvgElement('svg', { 'width': '100%', 'height': '100%' }, this.boardDiv);
-            const rect = createSvgElement('rect', { 'width': '100%', 'height': '100%', 'fill': 'darkgray' }, this.svgElt, false);
         }
         // ----------------------------------------------------------------------------------------
         addItem(position: Position = svgCenter(this.svgElt), itemId: string = uuid(), sessionId: string = ""): Item {
@@ -42,6 +43,9 @@ namespace reco.boardgame {
             setAttributs(item.svgGroup, { "item-id": item.id, "session-id": this.session.id }, true);
             this.session.synchronizer.addItem(position, item.id, sessionId);
             item.moveTo(position);
+            for (let otherItem of this.itemList) {
+                if (otherItem.onTop) svgOnTop(otherItem.svgGroup)
+            }
             return item;
         }
         // ----------------------------------------------------------------------------------------
@@ -58,6 +62,8 @@ namespace reco.boardgame {
     export class Item {
         // ----------------------------------------------------------------------------------------
         board: Board;
+        movable: boolean = false;
+        onTop: boolean = false;
         svgGroup: SVGGElement;
         id: string;
         position: Position = { x: 0, y: 0 };
@@ -66,6 +72,11 @@ namespace reco.boardgame {
             this.id = itemId;
             this.board = board;
             this.svgGroup = createSvgElement('g', {}, this.board.svgElt);
+        }
+        // ----------------------------------------------------------------------------------------
+        setMovable(movable: boolean, sessionId: string = "") {
+            this.movable = movable;
+            this.board.session.synchronizer.setMovable(movable, this.id, sessionId)
         }
         // ----------------------------------------------------------------------------------------
         addImage(href: string, size: Size, internalPosition: Position = { x: Number.NaN, y: Number.NaN }, sessionId: string = "") {
@@ -82,6 +93,22 @@ namespace reco.boardgame {
                 "item-id": this.id
             }, this.svgGroup);
             this.board.session.synchronizer.addImage(href, size, internalPosition, this.id, sessionId)
+        }
+        // ----------------------------------------------------------------------------------------
+        addRect(size: Size, internalPosition: Position = { x: Number.NaN, y: Number.NaN }, fill: string = "none", sessionId: string = "") {
+            let box = svgBox(svgLastElt(this.svgGroup)!);
+            if (isNaN(internalPosition.x)) {
+                internalPosition.x = 0;
+                internalPosition.y = box.y + box.height;
+            }
+            const svgRect = createSvgElement('rect', {
+                "x": "" + internalPosition.x, "y": "" + internalPosition.y,
+                "width": "" + size.width, "height": "" + size.height,
+                "fill": fill,
+                "session-id": this.board.session.id,
+                "item-id": this.id
+            }, this.svgGroup);
+            this.board.session.synchronizer.addRect(size, internalPosition, fill, this.id, sessionId)
         }
         // ----------------------------------------------------------------------------------------
         addText(text: string, internalPosition: Position = { x: Number.NaN, y: Number.NaN }, sessionId: string = "") {
@@ -119,7 +146,9 @@ namespace reco.boardgame {
         }
         // ----------------------------------------------------------------------------------------
         onMoveStart(target: EventTarget, position: Position): Item | null {
-            return this.session.board.itemForTarget(target);
+            let item = this.session.board.itemForTarget(target);
+            item = item && item.movable ? item : null;
+            return item;
         }
         // ----------------------------------------------------------------------------------------
         onMove(position: Position) {
@@ -146,10 +175,22 @@ namespace reco.boardgame {
             this.session.board.addItem(position, itemId, sessionId);
         }
         // ----------------------------------------------------------------------------------------
+        setMovable(movable: boolean, itemId: string, sessionId: string) {
+            console.log("RemoteSession.setMovable " + sessionId + "/" + itemId + " > " + movable)
+            let item = this.session.board.itemDict[itemId]
+            item.setMovable(movable, sessionId);
+        }
+        // ----------------------------------------------------------------------------------------
         addImage(href: string, size: Size, internalPosition: Position, itemId: string, sessionId: string) {
             console.log("RemoteSession.addImage " + sessionId + "/" + itemId + " > " + href)
             let item = this.session.board.itemDict[itemId]
             item.addImage(href, size, internalPosition, sessionId);
+        }
+        // ----------------------------------------------------------------------------------------
+        addRect(size: Size, internalPosition: Position, fill: string, itemId: string, sessionId: string) {
+            console.log("RemoteSession.addRect " + sessionId + "/" + itemId)
+            let item = this.session.board.itemDict[itemId]
+            item.addRect(size, internalPosition, fill, sessionId);
         }
         // ----------------------------------------------------------------------------------------
         addText(text: string, internalPosition: Position, itemId: string, sessionId: string) {
@@ -186,10 +227,22 @@ namespace reco.boardgame {
                     remoteSession.addItem(position, itemId, this.session.id);
         }
         // ----------------------------------------------------------------------------------------
+        setMovable(movable: boolean, itemId: string, sessionId: string) {
+            for (let remoteSession of this.remoteSessions)
+                if (sessionId !== remoteSession.id)
+                    remoteSession.setMovable(movable, itemId, this.session.id);
+        }
+        // ----------------------------------------------------------------------------------------
         addImage(href: string, size: Size, internalPosition: Position, itemId: string, sessionId: string) {
             for (let remoteSession of this.remoteSessions)
                 if (sessionId !== remoteSession.id)
                     remoteSession.addImage(href, size, internalPosition, itemId, this.session.id);
+        }
+        // ----------------------------------------------------------------------------------------
+        addRect(size: Size, internalPosition: Position, fill: string, itemId: string, sessionId: string) {
+            for (let remoteSession of this.remoteSessions)
+                if (sessionId !== remoteSession.id)
+                    remoteSession.addRect(size, internalPosition, fill, itemId, this.session.id);
         }
         // ----------------------------------------------------------------------------------------
         addText(text: string, internalPosition: Position, itemId: string, sessionId: string) {
@@ -211,26 +264,37 @@ namespace reco.boardgame {
 
     }
     // ============================================================================================
-    function initSession(session: Session) {
-        let center: Position = svgCenter(session.board.svgElt);
-        {
-            let item = session.board.addItem(pointTranslate(center, { width: -100, height: -25 }), "I1");
-            item.addText("Mario 1");
-            item.addImage("./images/mario.png", { width: 50, height: 50 });
-        }
-        {
-            let item = session.board.addItem(pointTranslate(center, { width: 100, height: -25 }), "I2");
-            item.addText("Mario 2");
-            item.addImage("./images/mario.png", { width: 50, height: 50 });
-        }
-    }
-    // ============================================================================================
     console.log("Board Game");
     let session1 = new Session("board1", "S1");
-    let session2 = new Session("board2", "S2", false);
+    let session2 = new Session("board2", "S2"); //, false);
+    session2.board.svgElt.setAttribute("transform", "rotate(180)")
     session1.synchronizer.addRemoteSession(new RemoteSession(session2));
     session2.synchronizer.addRemoteSession(new RemoteSession(session1));
-    initSession(session1);
+
+    let H = session1.board.height;
+    let W = session1.board.width;
+    let C = session1.board.center;
+    console.log(`W=${W}, H=${H}, C=${C.x}x${C.y}`)
+
+    session1.board.addItem({ x: 0, y: 0 }, "cyanZone").addRect({ "width": W, "height": H / 4 }, { x: 0, y: 0 }, "cyan");
+    session1.board.addItem({ x: 0, y: 0 }, "grayZone").addRect({ "width": W, "height": H / 2 }, { x: 0, y: H / 4 }, "darkgray");
+    session1.board.addItem({ x: 0, y: 0 }, "yellowZone").addRect({ "width": W, "height": H / 4 }, { x: 0, y: H * 3 / 4 }, "yellow");
+
+    session1.board.itemDict["cyanZone"].onTop = true;
+    session2.board.itemDict["yellowZone"].onTop = true;
+
+    {
+        let item = session1.board.addItem(pointTranslate(C, { width: -100, height: -25 }), "I1");
+        item.addText("Mario 1");
+        item.addImage("./images/mario.png", { width: 50, height: 50 });
+        item.setMovable(true);
+    }
+    {
+        let item = session1.board.addItem(pointTranslate(C, { width: 100, height: -25 }), "I2");
+        item.addText("Mario 2");
+        item.addImage("./images/mario.png", { width: 50, height: 50 });
+        item.setMovable(true);
+    }
     // ============================================================================================
 }
 // ################################################################################################

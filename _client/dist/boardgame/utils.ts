@@ -63,6 +63,13 @@ namespace reco.boardgame {
         return svgElt;
     }
     // ============================================================================================
+    export const svgOnTop = function (svgElt: SVGElement) {
+        let parent = svgElt.parentElement!;
+        parent.removeChild(svgElt);
+        parent.appendChild(svgElt);
+
+    }
+    // ============================================================================================
     export type Size = { width: number, height: number };
     export type Position = { x: number, y: number };
     export const pointTranslate = function (point: Position, move: Size): Position {
