@@ -9,11 +9,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": [
-    "./**/*.ts"
-  ],
   "files": [
     "utils.ts",
+    "engine.ts",
     "index.ts"
   ]
 }
