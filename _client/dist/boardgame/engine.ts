@@ -8,10 +8,10 @@ namespace reco.boardgame {
         board: Board;
         synchronizer: Synchronizer;
         // ----------------------------------------------------------------------------------------
-        constructor(commonBoardDivId: string, sessionId: string = uuid(), active: boolean = true) {
+        constructor(commonBoardDivId: string, proportion: Size, sessionId: string = uuid(), active: boolean = true) {
             this.id = sessionId;
             let boardDiv = document.getElementById(commonBoardDivId) as HTMLDivElement;
-            this.board = new Board(this, boardDiv);
+            this.board = new Board(this, boardDiv, proportion);
             if (active) new Listener(this);
             this.synchronizer = new Synchronizer(this);
         }
@@ -25,24 +25,28 @@ namespace reco.boardgame {
         svgElt: SVGSVGElement;
         itemList: Item[] = [];
         itemDict: { [key: string]: Item } = {};
-        get width(): number { return this.boardDiv.offsetWidth; }
-        get height(): number { return this.boardDiv.offsetHeight; }
-        get center(): Position { return { x: this.width / 2, y: this.height / 2 }; }
+        sizeR1: Size;
+        sizeR0: Size;
+        get widthR0(): number { return this.boardDiv.offsetWidth; }
+        get heightR0(): number { return this.boardDiv.offsetHeight; }
+        // get center(): Position { return { x: this.width / 2, y: this.height / 2 }; }
         // ----------------------------------------------------------------------------------------
-        constructor(session: Session, boardDiv: HTMLDivElement) {
+        constructor(session: Session, boardDiv: HTMLDivElement, sizeR1: Size) {
             this.session = session;
             this.boardDiv = boardDiv;
-            this.svgElt = createSvgElement('svg', { 'width': '100%', 'height': '100%' }, this.boardDiv);
+            this.sizeR1 = sizeR1;
+            this.sizeR0 = calculateSizeR0(this.boardDiv, this.sizeR1);
+            this.svgElt = createSvgElement('svg', { 'width': this.sizeR0.width + "", 'height': this.sizeR0.height + "" }, this.boardDiv);
         }
         // ----------------------------------------------------------------------------------------
-        addItem(position: Position = svgCenter(this.svgElt), itemId: string = uuid(), sessionId: string = ""): Item {
+        addItem(positionR1: Position, itemId: string = uuid(), sessionId: string = ""): Item {
             console.log("Session.addItem [" + this.session.id + "]" + sessionId + "/" + itemId)
             let item = new Item(this, itemId);
             this.itemList.push(item);
             this.itemDict[item.id] = item;
             setAttributs(item.svgGroup, { "item-id": item.id, "session-id": this.session.id }, true);
-            this.session.synchronizer.addItem(position, item.id, sessionId);
-            item.moveTo(position);
+            this.session.synchronizer.addItem(positionR1, item.id, sessionId);
+            item.moveTo(positionR1);
             for (let otherItem of this.itemList) {
                 if (otherItem.onTop) svgOnTop(otherItem.svgGroup)
             }
@@ -66,7 +70,17 @@ namespace reco.boardgame {
         onTop: boolean = false;
         svgGroup: SVGGElement;
         id: string;
-        position: Position = { x: 0, y: 0 };
+        get positionR0(): Position {
+            return positionR1toR0(this.board.sizeR0, this.board.sizeR1, this.positionR1);
+        }
+        positionR1: Position = { x: 0, y: 0 };
+        get sizeR0(): Size {
+            let box = svgBox(this.svgGroup);
+            return { width: box.width, height: box.height };
+        }
+        get sizeR1(): Size {
+            return sizeR0toR1(this.board.sizeR0, this.board.sizeR1, this.sizeR0);
+        }
         // ----------------------------------------------------------------------------------------
         constructor(board: Board, itemId: string) {
             this.id = itemId;
@@ -79,58 +93,55 @@ namespace reco.boardgame {
             this.board.session.synchronizer.setMovable(movable, this.id, sessionId)
         }
         // ----------------------------------------------------------------------------------------
-        addImage(href: string, size: Size, internalPosition: Position = { x: Number.NaN, y: Number.NaN }, sessionId: string = "") {
-            let box = svgBox(svgLastElt(this.svgGroup)!);
-            if (isNaN(internalPosition.x)) {
-                internalPosition.x = 0;
-                internalPosition.y = box.y + box.height;
-            }
+        nextRelativePositionR1(): Position {
+            return positionR0toR1(this.board.sizeR0, this.board.sizeR1, { x: 0, y: this.sizeR0.height + 2 });
+        }
+        // ----------------------------------------------------------------------------------------
+        addImage(href: string, sizeR1: Size, relativePosR1: Position | null = null, sessionId: string = "") {
+            if (!relativePosR1) relativePosR1 = this.nextRelativePositionR1();
+            let relativePosR0 = positionR1toR0(this.board.sizeR0, this.board.sizeR1, relativePosR1);
+            let sizeR0 = sizeR1toR0(this.board.sizeR0, this.board.sizeR1, sizeR1);
             const svgImage = createSvgElement('image', {
-                "x": "" + internalPosition.x, "y": "" + internalPosition.y,
-                "width": "" + size.width, "height": "" + size.height,
+                "x": relativePosR0.x + "", "y": relativePosR0.y + "",
+                "width": sizeR0.width + "", "height": sizeR0.height + "",
                 "href": href,
                 "session-id": this.board.session.id,
                 "item-id": this.id
             }, this.svgGroup);
-            this.board.session.synchronizer.addImage(href, size, internalPosition, this.id, sessionId)
+            this.board.session.synchronizer.addImage(href, sizeR1, relativePosR1, this.id, sessionId)
         }
         // ----------------------------------------------------------------------------------------
-        addRect(size: Size, internalPosition: Position = { x: Number.NaN, y: Number.NaN }, fill: string = "none", sessionId: string = "") {
-            let box = svgBox(svgLastElt(this.svgGroup)!);
-            if (isNaN(internalPosition.x)) {
-                internalPosition.x = 0;
-                internalPosition.y = box.y + box.height;
-            }
+        addRect(sizeR1: Size, relativePosR1: Position | null = null, fill: string = "none", sessionId: string = "") {
+            if (!relativePosR1) relativePosR1 = this.nextRelativePositionR1();
+            let relativePosR0 = positionR1toR0(this.board.sizeR0, this.board.sizeR1, relativePosR1);
+            let sizeR0 = sizeR1toR0(this.board.sizeR0, this.board.sizeR1, sizeR1);
             const svgRect = createSvgElement('rect', {
-                "x": "" + internalPosition.x, "y": "" + internalPosition.y,
-                "width": "" + size.width, "height": "" + size.height,
+                "x": relativePosR0.x + "", "y": relativePosR0.y + "",
+                "width": sizeR0.width + "", "height": sizeR0.height + "",
                 "fill": fill,
                 "session-id": this.board.session.id,
                 "item-id": this.id
             }, this.svgGroup);
-            this.board.session.synchronizer.addRect(size, internalPosition, fill, this.id, sessionId)
+            this.board.session.synchronizer.addRect(sizeR1, relativePosR1, fill, this.id, sessionId)
         }
         // ----------------------------------------------------------------------------------------
-        addText(text: string, internalPosition: Position = { x: Number.NaN, y: Number.NaN }, sessionId: string = "") {
-            let box = svgBox(svgLastElt(this.svgGroup)!);
-            if (isNaN(internalPosition.x)) {
-                internalPosition.x = 0;
-                internalPosition.y = box.y + box.height;
-            }
+        addText(text: string, relativePosR1: Position | null = null, sessionId: string = "") {
+            if (!relativePosR1) relativePosR1 = this.nextRelativePositionR1();
+            let relativePosR0 = positionR1toR0(this.board.sizeR0, this.board.sizeR1, relativePosR1);
             const svgText = createSvgElement('text', {
-                "x": "" + internalPosition.x, "y": "" + internalPosition.y,
+                "x": relativePosR0.x + "", "y": relativePosR0.y + "",
                 "font-family": fontFamily, "font-size": fontSize,
                 "font-weight": fontWeight, "letter-spacing": letterSpacing,
                 "session-id": this.board.session.id,
                 "item-id": this.id
             }, this.svgGroup);
             svgText.textContent = text;
-            this.board.session.synchronizer.addText(text, internalPosition, this.id, sessionId)
+            this.board.session.synchronizer.addText(text, relativePosR1, this.id, sessionId)
         }
         // ----------------------------------------------------------------------------------------
-        moveTo(position: Position, sessionId: string = "") {
-            this.position = position;
-            this.svgGroup = svgTranslate(this.svgGroup, this.position);
+        moveTo(positionR1: Position, sessionId: string = "") {
+            this.positionR1 = positionR1;
+            this.svgGroup = svgTranslate(this.svgGroup, positionR1toR0(this.board.sizeR0, this.board.sizeR1, positionR1));
         }
     }
     // ============================================================================================
@@ -145,7 +156,7 @@ namespace reco.boardgame {
             this.movableInfo = new MovableNotifierInfo(this);
         }
         // ----------------------------------------------------------------------------------------
-        onMoveStart(target: EventTarget, position: Position): Item | null {
+        onMoveStart(target: EventTarget): Item | null {
             let item = this.session.board.itemForTarget(target);
             item = item && item.movable ? item : null;
             return item;
@@ -156,7 +167,7 @@ namespace reco.boardgame {
         }
         // ----------------------------------------------------------------------------------------
         onMoveEnd() {
-            this.session.board.session.synchronizer.moveTo(this.movableInfo.item!.position, this.movableInfo.item!.id, "", true);
+            this.session.board.session.synchronizer.moveTo(this.movableInfo.item!.positionR1, this.movableInfo.item!.id, "", true);
         }
         // ----------------------------------------------------------------------------------------
     }

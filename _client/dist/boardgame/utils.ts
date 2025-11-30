@@ -44,7 +44,47 @@ namespace reco.boardgame {
         return element;
     }
     // ============================================================================================
+    export const calculateSizeR0 = function (parent: HTMLElement, sizeR1: Size): Size {
+        let parentW = parent.clientWidth;
+        let parentH = parent.clientHeight;
+        let propW = sizeR1.width;
+        let propH = sizeR1.height;
+        let scaleW = parentW / propW;
+        let scaleH = parentH / propH;
+        let scale = Math.min(scaleW, scaleH);
+        return { width: Math.round(propW * scale), height: Math.round(propH * scale) };
+    }
+    // ============================================================================================
+    export const sizeR1toR0 = function (parentSizeR0: Size, parentSizeR1: Size, sizeR1: Size): Size {
+        return {
+            width: Math.round(sizeR1.width / parentSizeR1.width * parentSizeR0.width),
+            height: Math.round(sizeR1.height / parentSizeR1.height * parentSizeR0.height)
+        };
+    }
+    export const positionR1toR0 = function (parentSizeR0: Size, parentSizeR1: Size, positionR1: Position): Position {
+        return {
+            x: Math.round(positionR1.x / parentSizeR1.width * parentSizeR0.width),
+            y: Math.round(positionR1.y / parentSizeR1.height * parentSizeR0.height)
+        };
+    }
+    export const sizeR0toR1 = function (parentSizeR0: Size, parentSizeR1: Size, sizeR0: Size): Size {
+        return {
+            width: Math.round(sizeR0.width / parentSizeR0.width * parentSizeR1.width),
+            height: Math.round(sizeR0.height / parentSizeR0.height * parentSizeR1.height)
+        };
+    }
+    export const positionR0toR1 = function (parentSizeR0: Size, parentSizeR1: Size, positionR0: Position): Position {
+        return {
+            x: Math.round(positionR0.x / parentSizeR0.width * parentSizeR1.width),
+            y: Math.round(positionR0.y / parentSizeR0.height * parentSizeR1.height)
+        };
+    }
+    // ============================================================================================
     export const svgBox = function (svgElt: SVGGraphicsElement | null): DOMRect { return svgElt ? svgElt.getBBox() : new DOMRect(0, 0, 0, 0); }
+    export const svgPosition = function (svgElt: SVGGraphicsElement | null): Position {
+        let box = svgBox(svgElt);
+        return svgElt ? { x: box.x, y: box.y } : { x: 0, y: 0 };
+    }
     // ============================================================================================
     export const svgCenter = function (svgElt: SVGGraphicsElement | null): { x: number, y: number } {
         let box = svgBox(svgElt);
@@ -63,6 +103,11 @@ namespace reco.boardgame {
         return svgElt;
     }
     // ============================================================================================
+    export const svgTranslatePercent = function (svgElt: SVGGraphicsElement, xy: { x: number, y: number }): SVGGraphicsElement {
+        svgElt.setAttribute("transform", `translate('${xy.x}%', '${xy.y}%')`);
+        return svgElt;
+    }
+    // ============================================================================================
     export const svgOnTop = function (svgElt: SVGElement) {
         let parent = svgElt.parentElement!;
         parent.removeChild(svgElt);
@@ -77,7 +122,7 @@ namespace reco.boardgame {
     }
     export interface MovableNotifier {
         movableInfo: MovableNotifierInfo;
-        onMoveStart(target: EventTarget, position: Position): Item | null;
+        onMoveStart(target: EventTarget): Item | null;
         onMove(position: Position): void;
         onMoveEnd(): void;
     }
@@ -85,8 +130,8 @@ namespace reco.boardgame {
     export class MovableNotifierInfo {
         // ----------------------------------------------------------------------------------------
         notifier: MovableNotifier;
-        ev0Position: Position = { x: Number.NaN, y: Number.NaN };
-        item0Position: Position = { x: Number.NaN, y: Number.NaN };
+        ev0PositionR0: Position = { x: Number.NaN, y: Number.NaN };
+        item0PositionR0: Position = { x: Number.NaN, y: Number.NaN };
         item: Item | null = null;
         get moving(): boolean { return this.item !== null; }
         // ----------------------------------------------------------------------------------------
@@ -132,22 +177,23 @@ namespace reco.boardgame {
         // ----------------------------------------------------------------------------------------
         onMoveStart(target: EventTarget, x: number, y: number) {
             let position = { x: x, y: y };
-            this.item = this.notifier.onMoveStart(target, position);
+            this.item = this.notifier.onMoveStart(target);
             if (this.item) {
                 console.log("Move start item " + this.item.id);
-                this.ev0Position = position;
-                this.item0Position = { x: this.item.position.x, y: this.item.position.y };
+                this.ev0PositionR0 = position;
+                this.item0PositionR0 = { x: this.item.positionR0.x, y: this.item.positionR0.y };
             }
         }
         // ----------------------------------------------------------------------------------------
         onMove(x: number, y: number) {
             if (this.item) {
-                let position = {
-                    x: this.item0Position.x + (x - this.ev0Position.x),
-                    y: this.item0Position.y + (y - this.ev0Position.y)
+                let positionR0 = {
+                    x: this.item0PositionR0.x + (x - this.ev0PositionR0.x),
+                    y: this.item0PositionR0.y + (y - this.ev0PositionR0.y)
                 }
-                this.item.moveTo(position);
-                this.notifier.onMove(position);
+                let positionR1 = positionR0toR1(this.item.board.sizeR0, this.item.board.sizeR1, positionR0);
+                this.item.moveTo(positionR1);
+                this.notifier.onMove(positionR1);
             }
         }
         // ----------------------------------------------------------------------------------------
@@ -156,8 +202,8 @@ namespace reco.boardgame {
                 console.log("Move end item " + this.item.id);
                 this.notifier.onMoveEnd();
                 this.item = null;
-                this.ev0Position = { x: Number.NaN, y: Number.NaN };
-                this.item0Position = { x: Number.NaN, y: Number.NaN };
+                this.ev0PositionR0 = { x: Number.NaN, y: Number.NaN };
+                this.item0PositionR0 = { x: Number.NaN, y: Number.NaN };
             }
         }
         // ----------------------------------------------------------------------------------------
